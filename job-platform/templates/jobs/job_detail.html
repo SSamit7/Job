@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}{{ job.title }}{% endblock %}
+{% block page_title %}Job Details{% endblock %}
+{% block content %}
+<div class="content-layout">
+    <div class="content-main">
+        <div class="job-row-title-line" style="margin-bottom:4px;">
+            <h1 style="margin-bottom:0;">{{ job.title }}</h1>
+            <span class="badge badge-neutral">{{ job.get_status_display }}</span>
+        </div>
+        <p class="muted">Posted by {{ job.client.username }} &middot; {{ job.created_at|timesince }} ago</p>
+
+        <div class="card" style="margin: 16px 0;">
+            <p class="budget" style="font-size:1.3rem;margin-bottom:4px;">Rs. {{ job.budget }} <span style="font-size:0.8rem;color:var(--ink-400);font-weight:500;">fixed price</span></p>
+            {% if job.category %}<span class="tag-pill">{{ job.category.name }}</span>{% endif %}
+        </div>
+
+        <div class="card" style="margin-bottom:16px;">
+            <h4>Working location</h4>
+            <p style="margin-bottom:4px;"><strong>{{ job.location|default:"Not specified" }}</strong></p>
+            {% if job.address %}<p style="margin-bottom:8px;">{{ job.address }}</p>{% endif %}
+            {% if job.map_url %}
+                <a href="{{ job.map_url }}" target="_blank" rel="noopener" class="btn btn-outline btn-sm">
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+                    View on map
+                </a>
+            {% endif %}
+        </div>
+
+        <div class="card" style="margin-bottom:16px;">
+            <h4>Working schedule</h4>
+            <p style="margin-bottom:2px;">
+                {% if job.scheduled_date %}{{ job.scheduled_date|date:"D, M j" }}{% else %}Date flexible{% endif %}
+                {% if job.start_time %} at {{ job.start_time|time:"g:i A" }}{% endif %}
+            </p>
+            {% if job.estimated_duration_hours %}<p class="muted">Estimated duration: ~{{ job.estimated_duration_hours }} hours</p>{% endif %}
+            {% if job.deadline %}<p class="muted">Applications close: {{ job.deadline }}</p>{% endif %}
+        </div>
+
+        <div class="card">
+            <h4>Description</h4>
+            <p>{{ job.description|linebreaks }}</p>
+        </div>
+
+        {% if user.is_authenticated and user.is_worker %}
+            <div style="margin-top:18px;">
+            {% if already_applied %}
+                <span class="badge badge-neutral">You already applied to this job.</span>
+            {% elif job.is_open %}
+                <a href="{% url 'applications:apply_job' job.pk %}" class="btn btn-primary">Apply Now</a>
+            {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

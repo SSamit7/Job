@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Register{% endblock %}
+{% block content %}
+<div class="auth-card">
+    <h1>Create your account</h1>
+    <p>Tell us whether you're hiring or looking for work — you can complete your profile after.</p>
+    <form method="post" class="form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary btn-block">Create Account</button>
+    </form>
+    <p style="margin-top:14px;">Already have an account? <a href="{% url 'accounts:login' %}" style="color:var(--violet-600);font-weight:600;">Login</a></p>
+</div>
+{% endblock %}

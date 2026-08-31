@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="auth-card">
+    <h1>Welcome back</h1>
+    <p>Log in to browse jobs, manage applications and track payments.</p>
+    <form method="post" class="form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary btn-block">Login</button>
+    </form>
+    <p style="margin-top:14px;">No account? <a href="{% url 'accounts:register' %}" style="color:var(--violet-600);font-weight:600;">Register</a></p>
+</div>
+{% endblock %}

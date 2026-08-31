@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Payment #{{ payment.pk }}{% endblock %}
+{% block page_title %}Payment{% endblock %}
+{% block content %}
+    <h1>Payment Details</h1>
+    <p>Job: {{ payment.contract.job.title }}</p>
+    <p>Status: {{ payment.get_status_display }}</p>
+    <p>Method: {{ payment.get_method_display }}</p>
+    <p>Total: {{ payment.total_amount }}</p>
+    <p>Platform fee: {{ payment.platform_fee }}</p>
+    <p>Worker payout: {{ payment.worker_payout }}</p>
+{% endblock %}

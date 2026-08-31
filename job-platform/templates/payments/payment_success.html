@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Payment Successful{% endblock %}
+{% block page_title %}Payment Successful{% endblock %}
+{% block content %}
+    <h1>Payment Successful</h1>
+    <p>Transaction ID: {{ payment.transaction_id }}</p>
+    <p>Total paid: {{ payment.total_amount }}</p>
+    <p>Platform commission: {{ payment.platform_fee }}</p>
+    <p class="muted">Credited automatically to the platform wallet — no action needed from anyone.</p>
+    <p>Worker payout: {{ payment.worker_payout }}</p>
+    <a href="{% url 'reviews:create_review' payment.contract.pk %}" class="btn btn-primary">Leave a Review</a>
+{% endblock %}

@@ -1,0 +1,21 @@
+@media (max-width: 1080px) {
+  .content-layout { grid-template-columns: 1fr; }
+  .content-rail { position: static; }
+}
+
+@media (max-width: 860px) {
+  .sidebar { display: none; }
+  .page-body { padding: 18px; }
+  .search-bar { flex-direction: column; }
+  .search-field { border-right: none; border-bottom: 1px solid var(--border); }
+  .search-bar .btn { padding: 12px; }
+}
+
+@media (max-width: 640px) {
+  .job-row { flex-wrap: wrap; }
+  .job-row-price { text-align: left; }
+  .job-row-actions { flex-direction: row; width: 100%; }
+  .job-grid { grid-template-columns: 1fr; }
+  .topbar { padding: 0 16px; }
+  .avatar-name { display: none; }
+}

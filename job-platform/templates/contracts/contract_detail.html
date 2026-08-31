@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Contract #{{ contract.pk }}{% endblock %}
+{% block page_title %}Contract{% endblock %}
+{% block content %}
+    <h1>Contract for "{{ contract.job.title }}"</h1>
+    <p>Client: {{ contract.client.username }}</p>
+    <p>Worker: {{ contract.worker.username }}</p>
+    <p>Agreed amount: {{ contract.agreed_amount }}</p>
+    <p>Status: {{ contract.get_status_display }}</p>
+
+    {% if user == contract.client and contract.status == "ACTIVE" %}
+        <a href="{% url 'contracts:mark_completed' contract.pk %}" class="btn btn-primary"
+           onclick="return confirm('Confirm the work is done? This moves to payment.');">
+           Mark Job Completed & Pay
+        </a>
+    {% endif %}
+
+    {% if contract.status == "COMPLETED" %}
+        {% if contract.payment.status == "SUCCESS" %}
+            <p class="badge">Paid on {{ contract.payment.paid_at|date:"M d, Y" }}</p>
+            <a href="{% url 'reviews:create_review' contract.pk %}" class="btn btn-secondary">Leave a Review</a>
+        {% else %}
+            <a href="{% url 'payments:initiate_payment' contract.pk %}" class="btn btn-primary">Proceed to Payment</a>
+        {% endif %}
+    {% endif %}
+{% endblock %}

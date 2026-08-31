@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Application Detail{% endblock %}
+{% block page_title %}Application{% endblock %}
+{% block content %}
+    <h1>Application for "{{ application.job.title }}"</h1>
+    <p>Worker: {{ application.worker.username }}</p>
+    <p>Proposed amount: {{ application.proposed_amount|default:"Job budget" }}</p>
+    <p>Status: {{ application.get_status_display }}</p>
+    <p>Cover letter:</p>
+    <p>{{ application.cover_letter|linebreaks }}</p>
+
+    {% if user == application.job.client and application.status == "PENDING" and application.job.is_open %}
+        <a href="{% url 'applications:select_worker' application.pk %}" class="btn btn-primary">Select this worker</a>
+    {% endif %}
+{% endblock %}

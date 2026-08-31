@@ -1,0 +1,57 @@
+/* ---------- Right-rail widget cards ---------- */
+.rail-card {
+  background: #fff; border: 1px solid var(--border);
+  border-radius: var(--radius-lg); padding: 18px 20px;
+}
+.rail-card h4 { font-size: 0.92rem; margin: 0 0 4px; }
+.rail-card .rail-sub { font-size: 0.78rem; color: var(--ink-400); margin-bottom: 14px; }
+.rail-card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.rail-link { font-size: 0.78rem; color: var(--violet-600); font-weight: 600; text-decoration: none; }
+
+/* Profile progress ring (signature element) */
+.progress-widget { display: flex; align-items: center; gap: 16px; }
+.progress-ring-wrap { position: relative; width: 62px; height: 62px; flex-shrink: 0; }
+.progress-ring {
+  position: absolute; inset: 0; border-radius: 50%;
+  background: conic-gradient(var(--violet-600) calc(var(--pct) * 1%), var(--violet-100) 0);
+}
+.progress-ring-inner {
+  position: absolute; inset: 6px; background: #fff; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 0.82rem; color: var(--violet-700);
+  font-family: var(--font-display);
+}
+.progress-widget-text p { margin: 0; font-size: 0.8rem; color: var(--ink-600); }
+.progress-widget-text strong { display: block; font-size: 0.92rem; margin-bottom: 2px; }
+
+/* Availability / visibility card */
+.availability-row { display: flex; align-items: center; gap: 10px; background: var(--green-50); border-radius: var(--radius-sm); padding: 12px 14px; }
+.availability-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--green-600); flex-shrink: 0; }
+.availability-row.inactive { background: var(--surface); }
+.availability-row.inactive .availability-dot { background: var(--ink-400); }
+.availability-row strong { display: block; font-size: 0.86rem; }
+.availability-row span { font-size: 0.78rem; color: var(--ink-600); }
+
+/* Mini activity stats */
+.mini-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.mini-stat strong { display: block; font-size: 1.35rem; font-family: var(--font-display); }
+.mini-stat span { font-size: 0.76rem; color: var(--ink-400); }
+
+/* Stand-out checklist */
+.checklist { list-style: none; margin: 0; padding: 0; }
+.checklist-item { display: flex; align-items: center; gap: 9px; font-size: 0.85rem; padding: 7px 0; color: var(--ink-600); }
+.checklist-item.done { color: var(--ink-900); }
+.checklist-item .dot {
+  width: 17px; height: 17px; border-radius: 50%; border: 2px solid var(--border);
+  flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.62rem; color: #fff;
+}
+.checklist-item.done .dot { background: var(--violet-600); border-color: var(--violet-600); }
+
+/* Big stat cards (used on dashboards) */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin: 18px 0; }
+.stat-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); padding: 18px; }
+.stat-card h2 { margin: 0; font-size: 1.7rem; color: var(--violet-700); }
+.stat-card p { margin: 4px 0 0; font-size: 0.82rem; }
+
+.payment-breakdown { background: var(--violet-50); border-radius: var(--radius-md); padding: 18px; margin: 16px 0; }
+.payment-breakdown p { color: var(--ink-900); margin: 4px 0; }

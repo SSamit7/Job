@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Manage {{ job.title }}{% endblock %}
+{% block page_title %}Manage Job{% endblock %}
+{% block content %}
+    <h1>{{ job.title }}</h1>
+    <p>Status: {{ job.get_status_display }} &middot; Budget: {{ job.budget }}</p>
+    <a href="{% url 'jobs:job_edit' job.pk %}" class="btn btn-secondary">Edit Job</a>
+
+    {% if job.contract %}
+        <p><a href="{% url 'contracts:contract_detail' job.contract.pk %}">View Contract</a></p>
+    {% endif %}
+
+    <h2>Applications ({{ applications.count }})</h2>
+    <table class="table">
+        <thead>
+            <tr><th>Worker</th><th>Proposed Amount</th><th>Status</th><th></th></tr>
+        </thead>
+        <tbody>
+        {% for application in applications %}
+            <tr>
+                <td>{{ application.worker.username }} ({{ application.worker.worker_profile.average_rating }}&#9733;)</td>
+                <td>{{ application.proposed_amount|default:job.budget }}</td>
+                <td>{{ application.get_status_display }}</td>
+                <td>
+                    <a href="{% url 'applications:application_detail' application.pk %}">View</a>
+                    {% if job.is_open and application.status == "PENDING" %}
+                        &middot;
+                        <a href="{% url 'applications:select_worker' application.pk %}">Select this worker</a>
+                    {% endif %}
+                </td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="4">No applications yet.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

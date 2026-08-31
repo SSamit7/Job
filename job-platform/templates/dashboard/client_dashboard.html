@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block content %}
+    <h1>Welcome back, {{ user.username }}</h1>
+    <p>Here's an overview of your jobs and hires.</p>
+
+    <div class="content-layout">
+        <div class="content-main">
+            <div class="stats-grid">
+                <div class="stat-card"><h2>{{ jobs_count }}</h2><p>Jobs posted</p></div>
+                <div class="stat-card"><h2>{{ open_jobs_count }}</h2><p>Open jobs</p></div>
+                <div class="stat-card"><h2>{{ active_contracts.count }}</h2><p>Active contracts</p></div>
+                <div class="stat-card"><h2>Rs. {{ total_spent }}</h2><p>Total paid out</p></div>
+            </div>
+
+            <div class="card" style="margin-bottom: 20px;">
+                <div class="rail-card-head" style="margin-bottom:14px;">
+                    <h4 style="margin:0;">Recent jobs</h4>
+                    <a href="{% url 'jobs:job_create' %}" class="btn btn-primary btn-sm">+ Post a Job</a>
+                </div>
+                <table class="table">
+                    <thead><tr><th>Title</th><th>Status</th><th></th></tr></thead>
+                    <tbody>
+                    {% for job in recent_jobs %}
+                        <tr>
+                            <td>{{ job.title }}</td>
+                            <td>{{ job.get_status_display }}</td>
+                            <td><a href="{% url 'jobs:my_job_detail' job.pk %}">Manage</a></td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="3">You haven't posted any jobs yet.</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h4 style="margin-bottom:14px;">Active contracts</h4>
+                <table class="table">
+                    <thead><tr><th>Job</th><th>Worker</th><th>Amount</th></tr></thead>
+                    <tbody>
+                    {% for contract in active_contracts %}
+                        <tr>
+                            <td><a href="{% url 'contracts:contract_detail' contract.pk %}">{{ contract.job.title }}</a></td>
+                            <td>{{ contract.worker.username }}</td>
+                            <td>Rs. {{ contract.agreed_amount }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="3">No active contracts right now.</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <aside class="content-rail">
+            <div class="rail-card">
+                <div class="rail-card-head">
+                    <h4>Profile progress</h4>
+                    <span class="rail-link" style="color:var(--green-600);">{{ profile.completion_percent }}% complete</span>
+                </div>
+                <div class="progress-widget">
+                    <div class="progress-ring-wrap">
+                        <div class="progress-ring" style="--pct: {{ profile.completion_percent }};"></div>
+                        <div class="progress-ring-inner">{{ profile.completion_percent }}%</div>
+                    </div>
+                    <div class="progress-widget-text">
+                        <strong>Complete your profile</strong>
+                        <p>Clients trust hirers with a complete profile.</p>
+                    </div>
+                </div>
+                <a href="{% url 'accounts:edit_profile' %}" class="rail-link">Complete now &rarr;</a>
+            </div>
+
+            <div class="rail-card">
+                <h4>How commission works</h4>
+                <p class="rail-sub" style="margin-bottom:8px;">On every completed job, the platform holds 10% and releases 90% to the worker automatically once you confirm the work.</p>
+                <a href="{% url 'core:about' %}" class="rail-link">Learn more &rarr;</a>
+            </div>
+        </aside>
+    </div>
+{% endblock %}

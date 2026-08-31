@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}My Profile{% endblock %}
+{% block page_title %}My Profile{% endblock %}
+{% block content %}
+    <h1>{{ user_obj.username }}'s Profile</h1>
+    <p>Role: {{ user_obj.get_role_display }}</p>
+    <p>Email: {{ user_obj.email }}</p>
+    <p>Phone: {{ user_obj.phone }}</p>
+
+    {% if user_obj.is_client %}
+        <p>Company: {{ user_obj.client_profile.company_name }}</p>
+        <p>Bio: {{ user_obj.client_profile.bio }}</p>
+    {% elif user_obj.is_worker %}
+        <p>Skills: {{ user_obj.worker_profile.skills }}</p>
+        <p>Rating: {{ user_obj.worker_profile.average_rating }} / 5</p>
+        <p>Jobs completed: {{ user_obj.worker_profile.jobs_completed_count }}</p>
+    {% endif %}
+
+    <a href="{% url 'accounts:edit_profile' %}" class="btn btn-secondary">Edit Profile</a>
+    <a href="{% url 'accounts:change_password' %}" class="btn btn-secondary">Change Password</a>
+    {% if user_obj.is_worker %}
+        <a href="{% url 'accounts:availability' %}" class="btn btn-secondary">Set Availability</a>
+    {% endif %}
+{% endblock %}

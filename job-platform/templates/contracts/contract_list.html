@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}My Contracts{% endblock %}
+{% block page_title %}Contracts{% endblock %}
+{% block content %}
+    <h1>My Contracts</h1>
+    <table class="table">
+        <thead><tr><th>Job</th><th>Other Party</th><th>Amount</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+        {% for contract in contracts %}
+            <tr>
+                <td>{{ contract.job.title }}</td>
+                <td>{% if user == contract.client %}{{ contract.worker.username }}{% else %}{{ contract.client.username }}{% endif %}</td>
+                <td>{{ contract.agreed_amount }}</td>
+                <td>{{ contract.get_status_display }}</td>
+                <td><a href="{% url 'contracts:contract_detail' contract.pk %}">View</a></td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="5">No contracts yet.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}Post a Job{% endblock %}
+{% block page_title %}Post a Job{% endblock %}
+{% block content %}
+    <h1>Post a New Job</h1>
+    <form method="post" enctype="multipart/form-data" class="form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Post Job</button>
+    </form>
+{% endblock %}

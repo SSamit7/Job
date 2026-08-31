@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Pay - {{ contract.job.title }}{% endblock %}
+{% block page_title %}Payment{% endblock %}
+{% block content %}
+    <h1>Payment for "{{ contract.job.title }}"</h1>
+    <div class="payment-breakdown">
+        <p>Total amount: <strong>{{ split.total }}</strong></p>
+        <p>Platform commission (10%): {{ split.platform_fee }}</p>
+        <p>Worker receives (90%): {{ split.worker_payout }}</p>
+    </div>
+
+    <form method="post" action="{% url 'payments:process_payment' contract.pk %}" class="form">
+        {% csrf_token %}
+        <label>Payment method</label>
+        <select name="method">
+            <option value="CARD">Card</option>
+            <option value="ESEWA">eSewa</option>
+            <option value="KHALTI">Khalti</option>
+            <option value="BANK">Bank Transfer</option>
+        </select>
+        <button type="submit" class="btn btn-primary">Pay {{ split.total }}</button>
+    </form>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}My Jobs{% endblock %}
+{% block page_title %}My Jobs{% endblock %}
+{% block content %}
+    <h1>My Posted Jobs</h1>
+    <a href="{% url 'jobs:job_create' %}" class="btn btn-primary">+ Post New Job</a>
+    <table class="table">
+        <thead>
+            <tr><th>Title</th><th>Budget</th><th>Status</th><th>Applications</th><th></th></tr>
+        </thead>
+        <tbody>
+        {% for job in jobs %}
+            <tr>
+                <td>{{ job.title }}</td>
+                <td>{{ job.budget }}</td>
+                <td>{{ job.get_status_display }}</td>
+                <td>{{ job.applications.count }}</td>
+                <td><a href="{% url 'jobs:my_job_detail' job.pk %}">Manage</a></td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="5">You haven't posted any jobs yet.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

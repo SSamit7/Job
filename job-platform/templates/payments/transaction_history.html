@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Transaction History{% endblock %}
+{% block page_title %}Transactions{% endblock %}
+{% block content %}
+    <h1>Transaction History</h1>
+    <table class="table">
+        <thead><tr><th>Job</th><th>Total</th><th>Fee</th><th>Payout</th><th>Status</th><th>Date</th></tr></thead>
+        <tbody>
+        {% for payment in payments %}
+            <tr>
+                <td>{{ payment.contract.job.title }}</td>
+                <td>{{ payment.total_amount }}</td>
+                <td>{{ payment.platform_fee }}</td>
+                <td>{{ payment.worker_payout }}</td>
+                <td>{{ payment.get_status_display }}</td>
+                <td>{{ payment.created_at|date:"M d, Y" }}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="6">No transactions yet.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

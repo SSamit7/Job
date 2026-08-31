@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}My Applications{% endblock %}
+{% block page_title %}My Applications{% endblock %}
+{% block content %}
+    <h1>My Applications</h1>
+    <table class="table">
+        <thead><tr><th>Job</th><th>Proposed Amount</th><th>Status</th><th>Applied</th></tr></thead>
+        <tbody>
+        {% for application in applications %}
+            <tr>
+                <td><a href="{% url 'jobs:job_detail' application.job.pk %}">{{ application.job.title }}</a></td>
+                <td>{{ application.proposed_amount|default:"-" }}</td>
+                <td>{{ application.get_status_display }}</td>
+                <td>{{ application.applied_at|date:"M d, Y" }}</td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="4">You haven't applied to any jobs yet.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

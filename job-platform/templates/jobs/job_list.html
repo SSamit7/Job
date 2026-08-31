@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% block title %}Discover Jobs{% endblock %}
+{% block page_title %}Discover{% endblock %}
+
+{% block content %}
+<div class="hero-search">
+    <span class="hero-pin">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+    </span>
+    <h1>Find work that fits <span>your time.</span></h1>
+    <p class="hero-sub">Search open jobs by keyword, location and budget — apply directly, get selected, and get paid once the job is done.</p>
+
+    <form method="get" class="search-bar">
+        <div class="search-field">
+            <label for="id_q">What work?</label>
+            {{ form.q }}
+        </div>
+        <div class="search-field">
+            <label for="id_location">Location</label>
+            {{ form.location }}
+        </div>
+        <div class="search-field">
+            <label for="id_min_budget">Min budget</label>
+            {{ form.min_budget }}
+        </div>
+        <div class="search-field">
+            <label for="id_max_budget">Max budget</label>
+            {{ form.max_budget }}
+        </div>
+        <button type="submit" class="btn btn-primary">Find Jobs</button>
+    </form>
+</div>
+
+<div class="content-layout">
+    <div class="content-main">
+        <div class="rail-card-head">
+            <div>
+                <h4 style="margin-bottom:2px;">Recommended for you</h4>
+                <p class="rail-sub" style="margin-bottom:0;">Open jobs matching your search</p>
+            </div>
+        </div>
+
+        <div style="margin-top:14px;">
+        {% for job in page_obj %}
+            <div class="job-row">
+                <div class="job-row-icon" style="background: {% cycle 'var(--violet-50)' '#FFF1E6' '#E8F6FF' '#FFF0F5' %};">
+                    {% cycle '🛠️' '📦' '🧹' '🚚' %}
+                </div>
+                <div class="job-row-main">
+                    <div class="job-row-title-line">
+                        <h3><a href="{% url 'jobs:job_detail' job.pk %}" style="text-decoration:none;color:inherit;">{{ job.title }}</a></h3>
+                        {% if forloop.counter0|divisibleby:2 %}
+                            <span class="badge badge-new">New</span>
+                        {% else %}
+                            <span class="badge badge-urgent">Urgent</span>
+                        {% endif %}
+                    </div>
+                    <p class="job-row-client">{{ job.client.username }}</p>
+                    <div class="job-row-meta">
+                        <span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+                            {{ job.location|default:"Remote" }}
+                        </span>
+                        <span>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+                            {% if job.scheduled_date %}{{ job.scheduled_date|date:"D, M j" }}{% else %}Flexible{% endif %}{% if job.start_time %}, {{ job.start_time|time:"g:i A" }}{% endif %}
+                        </span>
+                        {% if job.estimated_duration_hours %}
+                        <span>~{{ job.estimated_duration_hours }} hours</span>
+                        {% endif %}
+                    </div>
+                    <div class="job-row-tags">
+                        {% if job.category %}<span class="tag-pill">{{ job.category.name }}</span>{% endif %}
+                        <span class="tag-pill">Posted {{ job.created_at|timesince }} ago</span>
+                    </div>
+                </div>
+                <div class="job-row-price">
+                    <strong>Rs. {{ job.budget }}</strong>
+                    <span>Fixed price</span>
+                </div>
+                <div class="job-row-actions">
+                    <a href="{% url 'jobs:job_detail' job.pk %}" class="btn btn-outline btn-sm">View Details</a>
+                    {% if user.is_authenticated and user.is_worker %}
+                        {% if job.pk in applied_job_ids %}
+                            <span class="badge badge-neutral" style="text-align:center;">Applied</span>
+                        {% else %}
+                            <a href="{% url 'applications:apply_job' job.pk %}" class="btn btn-primary btn-sm">Apply Now</a>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+        {% empty %}
+            <p>No jobs match your search right now — try widening your filters.</p>
+        {% endfor %}
+        </div>
+
+        <div class="pagination" style="display:flex;gap:12px;align-items:center;margin-top:16px;">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline btn-sm">Previous</a>
+            {% endif %}
+            <span class="muted">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline btn-sm">Next</a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if user.is_authenticated and user.is_worker %}
+    <aside class="content-rail">
+        <div class="rail-card">
+            <div class="rail-card-head">
+                <h4>Profile progress</h4>
+                <span class="rail-link" style="color:var(--green-600);">{{ profile.completion_percent }}% complete</span>
+            </div>
+            <div class="progress-widget">
+                <div class="progress-ring-wrap">
+                    <div class="progress-ring" style="--pct: {{ profile.completion_percent }};"></div>
+                    <div class="progress-ring-inner">{{ profile.completion_percent }}%</div>
+                </div>
+                <div class="progress-widget-text">
+                    <strong>Complete your profile</strong>
+                    <p>to get more job matches and build trust.</p>
+                </div>
+            </div>
+            <a href="{% url 'accounts:edit_profile' %}" class="rail-link">Complete now &rarr;</a>
+        </div>
+
+        <div class="rail-card">
+            <div class="rail-card-head">
+                <h4>Your availability</h4>
+                <a href="{% url 'accounts:availability' %}" class="rail-link">Edit</a>
+            </div>
+            {% if availability.is_available_today %}
+                <div class="availability-row">
+                    <span class="availability-dot"></span>
+                    <div>
+                        <strong>Available today</strong>
+                        <span>
+                            {% if availability.available_from and availability.available_to %}
+                                {{ availability.available_from|time:"g:i A" }} - {{ availability.available_to|time:"g:i A" }}
+                            {% else %}
+                                Hours not set
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+            {% else %}
+                <div class="availability-row inactive">
+                    <span class="availability-dot"></span>
+                    <div>
+                        <strong>Not available today</strong>
+                        <span>Turn this on when you're free to work</span>
+                    </div>
+                </div>
+            {% endif %}
+            <ul class="checklist" style="margin-top:10px;">
+                <li class="checklist-item done" style="padding:4px 0;">
+                    <span class="dot">&rsaquo;</span> Preferred distance: within {{ availability.preferred_distance_km }} km
+                </li>
+                {% if availability.work_types_list %}
+                <li class="checklist-item done" style="padding:4px 0;">
+                    <span class="dot">&#9635;</span> Work types: {{ availability.preferred_work_types }}
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+
+        <div class="rail-card">
+            <h4>Your activity</h4>
+            <p class="rail-sub">This month</p>
+            <div class="mini-stats">
+                <div class="mini-stat"><strong>{{ profile.user.applications.count }}</strong><span>Applications</span></div>
+                <div class="mini-stat"><strong>{{ profile.jobs_completed_count }}</strong><span>Completed</span></div>
+            </div>
+        </div>
+
+        <div class="rail-card">
+            <h4>Stand out to clients</h4>
+            <ul class="checklist">
+                <li class="checklist-item {% if checklist.bio %}done{% endif %}"><span class="dot">{% if checklist.bio %}&#10003;{% endif %}</span> Complete your bio</li>
+                <li class="checklist-item {% if checklist.skills %}done{% endif %}"><span class="dot">{% if checklist.skills %}&#10003;{% endif %}</span> Add your skills</li>
+                <li class="checklist-item {% if checklist.verified %}done{% endif %}"><span class="dot">{% if checklist.verified %}&#10003;{% endif %}</span> Verify your account</li>
+                <li class="checklist-item {% if checklist.profile_photo %}done{% endif %}"><span class="dot">{% if checklist.profile_photo %}&#10003;{% endif %}</span> Add a profile photo</li>
+            </ul>
+            <a href="{% url 'accounts:edit_profile' %}" class="btn btn-primary btn-block btn-sm">Improve profile</a>
+        </div>
+    </aside>
+    {% endif %}
+</div>
+{% endblock %}

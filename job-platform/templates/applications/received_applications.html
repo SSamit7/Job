@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Received Applications{% endblock %}
+{% block page_title %}Applications Received{% endblock %}
+{% block content %}
+    <h1>Applications Received</h1>
+    <table class="table">
+        <thead><tr><th>Job</th><th>Worker</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+        {% for application in applications %}
+            <tr>
+                <td>{{ application.job.title }}</td>
+                <td>{{ application.worker.username }}</td>
+                <td>{{ application.get_status_display }}</td>
+                <td><a href="{% url 'applications:application_detail' application.pk %}">View</a></td>
+            </tr>
+        {% empty %}
+            <tr><td colspan="4">No applications received yet.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

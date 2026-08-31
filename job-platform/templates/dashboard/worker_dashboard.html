@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block content %}
+    <h1>Welcome back, {{ user.username }}</h1>
+    <p>Here's how your work on JobPlatform is going.</p>
+
+    <div class="content-layout">
+        <div class="content-main">
+            <div class="stats-grid">
+                <div class="stat-card"><h2>{{ applications_count }}</h2><p>Applications sent</p></div>
+                <div class="stat-card"><h2>{{ accepted_count }}</h2><p>Accepted</p></div>
+                <div class="stat-card"><h2>{{ active_contracts.count }}</h2><p>Active contracts</p></div>
+                <div class="stat-card"><h2>Rs. {{ total_earned }}</h2><p>Total earned (after commission)</p></div>
+            </div>
+
+            <div class="card" style="margin-bottom:20px;">
+                <h4 style="margin-bottom:14px;">Recent applications</h4>
+                <table class="table">
+                    <thead><tr><th>Job</th><th>Status</th></tr></thead>
+                    <tbody>
+                    {% for application in recent_applications %}
+                        <tr>
+                            <td><a href="{% url 'jobs:job_detail' application.job.pk %}">{{ application.job.title }}</a></td>
+                            <td>{{ application.get_status_display }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="2">You haven't applied to any jobs yet — <a href="{% url 'jobs:job_list' %}">browse open jobs</a>.</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <h4 style="margin-bottom:14px;">Active contracts</h4>
+                <table class="table">
+                    <thead><tr><th>Job</th><th>Client</th><th>Amount</th></tr></thead>
+                    <tbody>
+                    {% for contract in active_contracts %}
+                        <tr>
+                            <td><a href="{% url 'contracts:contract_detail' contract.pk %}">{{ contract.job.title }}</a></td>
+                            <td>{{ contract.client.username }}</td>
+                            <td>Rs. {{ contract.agreed_amount }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr><td colspan="3">No active contracts right now.</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <aside class="content-rail">
+            <div class="rail-card">
+                <div class="rail-card-head">
+                    <h4>Profile progress</h4>
+                    <span class="rail-link" style="color:var(--green-600);">{{ profile.completion_percent }}% complete</span>
+                </div>
+                <div class="progress-widget">
+                    <div class="progress-ring-wrap">
+                        <div class="progress-ring" style="--pct: {{ profile.completion_percent }};"></div>
+                        <div class="progress-ring-inner">{{ profile.completion_percent }}%</div>
+                    </div>
+                    <div class="progress-widget-text">
+                        <strong>Complete your profile</strong>
+                        <p>to get more job matches and build trust.</p>
+                    </div>
+                </div>
+                <a href="{% url 'accounts:edit_profile' %}" class="rail-link">Complete now &rarr;</a>
+            </div>
+
+            <div class="rail-card">
+                <div class="rail-card-head">
+                    <h4>Your availability</h4>
+                    <a href="{% url 'accounts:availability' %}" class="rail-link">Edit</a>
+                </div>
+                {% if availability.is_available_today %}
+                    <div class="availability-row">
+                        <span class="availability-dot"></span>
+                        <div>
+                            <strong>Available today</strong>
+                            <span>
+                                {% if availability.available_from and availability.available_to %}
+                                    {{ availability.available_from|time:"g:i A" }} - {{ availability.available_to|time:"g:i A" }}
+                                {% else %}
+                                    Hours not set
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="availability-row inactive">
+                        <span class="availability-dot"></span>
+                        <div>
+                            <strong>Not available today</strong>
+                            <span>Turn this on when you're free to work</span>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="rail-card">
+                <h4>Stand out to clients</h4>
+                <ul class="checklist">
+                    <li class="checklist-item {% if checklist.bio %}done{% endif %}"><span class="dot">{% if checklist.bio %}&#10003;{% endif %}</span> Complete your bio</li>
+                    <li class="checklist-item {% if checklist.skills %}done{% endif %}"><span class="dot">{% if checklist.skills %}&#10003;{% endif %}</span> Add your skills</li>
+                    <li class="checklist-item {% if checklist.verified %}done{% endif %}"><span class="dot">{% if checklist.verified %}&#10003;{% endif %}</span> Verify your account</li>
+                    <li class="checklist-item {% if checklist.profile_photo %}done{% endif %}"><span class="dot">{% if checklist.profile_photo %}&#10003;{% endif %}</span> Add a profile photo</li>
+                </ul>
+                <a href="{% url 'accounts:edit_profile' %}" class="btn btn-primary btn-block btn-sm">Improve profile</a>
+            </div>
+        </aside>
+    </div>
+{% endblock %}

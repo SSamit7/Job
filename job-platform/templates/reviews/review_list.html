@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Reviews{% endblock %}
+{% block page_title %}Reviews{% endblock %}
+{% block content %}
+    <h1>Reviews</h1>
+    {% for review in reviews %}
+        <div class="review-card">
+            <p>{{ review.rating }} &#9733; by {{ review.reviewer.username }}</p>
+            <p>{{ review.comment }}</p>
+            <p class="muted">{{ review.created_at|date:"M d, Y" }}</p>
+        </div>
+    {% empty %}
+        <p>No reviews yet.</p>
+    {% endfor %}
+{% endblock %}

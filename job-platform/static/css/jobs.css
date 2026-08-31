@@ -1,0 +1,77 @@
+/* ---------- Two-column content + rail layout ---------- */
+.content-layout { display: grid; grid-template-columns: 1fr 320px; gap: 24px; align-items: start; }
+.content-rail { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 90px; }
+
+/* ---------- Hero search banner ---------- */
+.hero-search {
+  background: linear-gradient(135deg, #F5F3FF 0%, #EEF2FF 100%);
+  border-radius: 22px;
+  padding: 34px 36px;
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 26px;
+}
+.hero-search h1 { font-size: 1.85rem; margin-bottom: 6px; }
+.hero-search h1 span { color: var(--violet-600); }
+.hero-search .hero-sub { color: var(--ink-600); margin-bottom: 22px; max-width: 480px; }
+.hero-pin {
+  position: absolute; top: 28px; right: 60px;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--violet-600); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 10px 24px rgba(124,58,237,0.35);
+}
+.hero-pin svg { width: 20px; height: 20px; }
+
+.search-bar {
+  display: flex; background: #fff; border-radius: 16px;
+  box-shadow: var(--shadow-md); overflow: hidden;
+}
+.search-field { flex: 1; padding: 12px 18px; border-right: 1px solid var(--border); min-width: 0; }
+.search-field:last-of-type { border-right: none; }
+.search-field label {
+  display: block; font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.04em; color: var(--ink-400); margin-bottom: 3px;
+}
+.search-field input, .search-field select {
+  border: none; padding: 0; font-size: 0.9rem; width: 100%; background: transparent;
+  font-family: var(--font-body); color: var(--ink-900);
+}
+.search-field input:focus, .search-field select:focus { outline: none; }
+.search-bar .btn { border-radius: 0; align-self: stretch; padding: 0 26px; }
+
+.search-tags { display: flex; align-items: center; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+.search-tags .label { font-size: 0.8rem; color: var(--ink-600); margin-right: 4px; }
+.search-tags .tag-pill { cursor: default; }
+
+/* ---------- Job rows (Discover feed) ---------- */
+.job-row {
+  display: flex; align-items: center; gap: 16px;
+  background: #fff; border: 1px solid var(--border); border-radius: 16px;
+  padding: 16px 18px; margin-bottom: 12px;
+}
+.job-row-icon {
+  width: 50px; height: 50px; border-radius: 13px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3rem; background: var(--violet-50);
+}
+.job-row-main { flex: 1; min-width: 0; }
+.job-row-title-line { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.job-row-title-line h3 { margin: 0; font-size: 1rem; }
+.job-row-client { color: var(--ink-600); font-size: 0.85rem; margin: 4px 0 0; display: flex; align-items: center; gap: 5px; }
+.job-row-meta { display: flex; gap: 18px; color: var(--ink-400); font-size: 0.82rem; margin-top: 8px; flex-wrap: wrap; }
+.job-row-meta span { display: flex; align-items: center; gap: 5px; }
+.job-row-meta svg { width: 14px; height: 14px; }
+.job-row-tags { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.tag-pill {
+  background: var(--surface); border: 1px solid var(--border); color: var(--ink-600);
+  font-size: 0.72rem; font-weight: 600; padding: 4px 11px; border-radius: 999px;
+}
+.job-row-price { text-align: right; min-width: 110px; flex-shrink: 0; }
+.job-row-price strong { display: block; font-size: 1.05rem; color: var(--ink-900); font-family: var(--font-display); }
+.job-row-price span { font-size: 0.76rem; color: var(--ink-400); }
+.job-row-actions { display: flex; flex-direction: column; gap: 8px; min-width: 130px; flex-shrink: 0; }
+
+/* ---------- Search / filter form on the list page (fallback, non-hero) ---------- */
+.search-form { max-width: none; display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; margin-bottom: 8px; }
+.search-form p { margin: 0; }

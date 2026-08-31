@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Apply - {{ job.title }}{% endblock %}
+{% block page_title %}Apply{% endblock %}
+{% block content %}
+    <h1>Apply for "{{ job.title }}"</h1>
+    <p>Client's budget: {{ job.budget }}</p>
+    <form method="post" class="form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Submit Application</button>
+    </form>
+{% endblock %}
