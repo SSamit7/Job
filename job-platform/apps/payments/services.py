@@ -40,3 +40,23 @@ def credit_commission(payment):
 
     CommissionLedgerEntry.objects.create(payment=payment, amount=payment.platform_fee)
     PlatformWallet.get_instance().credit(payment.platform_fee)
+
+
+def required_commission_for(job):
+    """The wallet balance a worker must hold before they can take this job."""
+    return calculate_split(job.budget)["platform_fee"]
+
+
+def credit_topup(topup):
+    """
+    Called once a top-up 'lands' in the platform's collection account.
+    Credits the worker's internal wallet ledger by the same amount.
+    Safe to call more than once: only ever credits a given topup once.
+    """
+    from .models import WorkerWallet
+
+    if topup.status == topup.Status.SUCCESS and topup.credited_at:
+        return  # already credited - never double-credit a retried call
+
+    wallet, _ = WorkerWallet.objects.get_or_create(worker=topup.worker)
+    wallet.credit(topup.amount)

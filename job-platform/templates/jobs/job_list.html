@@ -77,6 +77,9 @@
                 <div class="job-row-price">
                     <strong>Rs. {{ job.budget }}</strong>
                     <span>Fixed price</span>
+                    {% if user.is_authenticated and user.is_worker %}
+                        <span style="display:block;margin-top:4px;">Needs Rs. {{ job.required_commission }} wallet</span>
+                    {% endif %}
                 </div>
                 <div class="job-row-actions">
                     <a href="{% url 'jobs:job_detail' job.pk %}" class="btn btn-outline btn-sm">View Details</a>

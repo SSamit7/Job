@@ -13,17 +13,33 @@
         <div class="card" style="margin: 16px 0;">
             <p class="budget" style="font-size:1.3rem;margin-bottom:4px;">Rs. {{ job.budget }} <span style="font-size:0.8rem;color:var(--ink-400);font-weight:500;">fixed price</span></p>
             {% if job.category %}<span class="tag-pill">{{ job.category.name }}</span>{% endif %}
+            {% if user.is_authenticated and user.is_worker %}
+                <p class="muted" style="margin-top:10px;margin-bottom:0;">Requires Rs. {{ job.required_commission }} in your wallet to take this job.</p>
+            {% endif %}
         </div>
 
         <div class="card" style="margin-bottom:16px;">
             <h4>Working location</h4>
             <p style="margin-bottom:4px;"><strong>{{ job.location|default:"Not specified" }}</strong></p>
-            {% if job.address %}<p style="margin-bottom:8px;">{{ job.address }}</p>{% endif %}
+            {% if job.address %}<p style="margin-bottom:12px;">{{ job.address }}</p>{% endif %}
             {% if job.map_url %}
+                <div style="border-radius:var(--radius-sm); overflow:hidden; border:1px solid var(--border); height:240px; margin-bottom:10px;">
+                    {% if job.has_coordinates %}
+                        <iframe width="100%" height="100%" frameborder="0" style="border:0;"
+                                src="https://maps.google.com/maps?q={{ job.latitude }},{{ job.longitude }}&z=15&output=embed"
+                                allowfullscreen loading="lazy"></iframe>
+                    {% else %}
+                        <iframe width="100%" height="100%" frameborder="0" style="border:0;"
+                                src="https://maps.google.com/maps?q={{ job.address|urlencode }}+{{ job.location|urlencode }}&z=13&output=embed"
+                                allowfullscreen loading="lazy"></iframe>
+                    {% endif %}
+                </div>
                 <a href="{{ job.map_url }}" target="_blank" rel="noopener" class="btn btn-outline btn-sm">
                     <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
-                    View on map
+                    Open in Google Maps
                 </a>
+            {% else %}
+                <p class="muted">No map location set for this job.</p>
             {% endif %}
         </div>
 

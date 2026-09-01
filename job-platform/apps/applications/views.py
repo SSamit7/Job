@@ -4,6 +4,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 
 from apps.jobs.models import Job
 from apps.contracts.models import Contract
+from apps.payments.models import WorkerWallet
+from apps.payments.services import required_commission_for
 from .forms import ApplicationForm
 from .models import Application
 
@@ -20,6 +22,16 @@ def apply_job_view(request, job_pk):
         messages.warning(request, "You already applied for this job.")
         return redirect("jobs:job_detail", pk=job.pk)
 
+    wallet, _ = WorkerWallet.objects.get_or_create(worker=request.user)
+    required = required_commission_for(job)
+    if wallet.balance < required:
+        messages.error(
+            request,
+            f"You need at least Rs. {required} in your wallet (the platform's 10% commission on this "
+            f"job) before you can take it. Your current balance is Rs. {wallet.balance}.",
+        )
+        return redirect("payments:wallet")
+
     if request.method == "POST":
         form = ApplicationForm(request.POST)
         if form.is_valid():
@@ -32,7 +44,11 @@ def apply_job_view(request, job_pk):
     else:
         form = ApplicationForm()
 
-    return render(request, "applications/application_form.html", {"form": form, "job": job})
+    return render(
+        request,
+        "applications/application_form.html",
+        {"form": form, "job": job, "required_commission": required, "wallet": wallet},
+    )
 
 
 @login_required
@@ -61,6 +77,17 @@ def select_worker_view(request, pk):
 
     if job.status != Job.Status.OPEN:
         messages.error(request, "This job is no longer open.")
+        return redirect("jobs:my_job_detail", pk=job.pk)
+
+    wallet, _ = WorkerWallet.objects.get_or_create(worker=application.worker)
+    required = required_commission_for(job)
+    if wallet.balance < required:
+        messages.error(
+            request,
+            f"{application.worker.username}'s wallet balance dropped below the required commission "
+            f"(Rs. {required}) since they applied, so they can't be selected right now. Ask them to top "
+            f"up, or choose a different applicant.",
+        )
         return redirect("jobs:my_job_detail", pk=job.pk)
 
     application.status = Application.Status.ACCEPTED

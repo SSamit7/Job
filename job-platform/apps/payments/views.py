@@ -6,8 +6,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 
 from apps.contracts.models import Contract
-from .models import Payment, PlatformWallet, CommissionLedgerEntry
-from .services import calculate_split, credit_commission
+from .forms import TopupForm
+from .models import Payment, PlatformWallet, CommissionLedgerEntry, WorkerWallet, WalletTopup
+from .services import calculate_split, credit_commission, credit_topup
 
 
 @login_required
@@ -85,3 +86,56 @@ def platform_wallet_view(request):
         "payment", "payment__contract", "payment__contract__job"
     )[:100]
     return render(request, "payments/platform_wallet.html", {"wallet": wallet, "entries": entries})
+
+
+@login_required
+def wallet_view(request):
+    """A worker's own wallet: balance, top-up form, and top-up history."""
+    if not request.user.is_worker:
+        messages.error(request, "Wallets are for workers only.")
+        return redirect("core:dashboard")
+
+    wallet, _ = WorkerWallet.objects.get_or_create(worker=request.user)
+    form = TopupForm()
+    topups = WalletTopup.objects.filter(worker=request.user)[:20]
+
+    return render(request, "payments/wallet.html", {"wallet": wallet, "form": form, "topups": topups})
+
+
+@login_required
+def initiate_topup_view(request):
+    if not request.user.is_worker:
+        messages.error(request, "Wallets are for workers only.")
+        return redirect("core:dashboard")
+
+    form = TopupForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        topup = form.save(commit=False)
+        topup.worker = request.user
+        topup.save()
+        return redirect("payments:process_topup", pk=topup.pk)
+
+    wallet, _ = WorkerWallet.objects.get_or_create(worker=request.user)
+    topups = WalletTopup.objects.filter(worker=request.user)[:20]
+    messages.error(request, "Please fix the errors below.")
+    return render(request, "payments/wallet.html", {"wallet": wallet, "form": form, "topups": topups})
+
+
+@login_required
+def process_topup_view(request, pk):
+    """
+    Simulated deposit-gateway callback, same pattern as process_payment_view.
+    Swap the body for a real eSewa/Khalti/bank webhook - credit_topup()
+    (the actual wallet-crediting logic) stays exactly the same either way.
+    """
+    topup = get_object_or_404(WalletTopup, pk=pk, worker=request.user)
+
+    if topup.status != WalletTopup.Status.SUCCESS:
+        topup.transaction_id = str(uuid.uuid4())
+        topup.status = WalletTopup.Status.SUCCESS
+        topup.credited_at = timezone.now()
+        topup.save()
+        credit_topup(topup)
+        messages.success(request, f"Rs. {topup.amount} added to your wallet.")
+
+    return redirect("payments:wallet")

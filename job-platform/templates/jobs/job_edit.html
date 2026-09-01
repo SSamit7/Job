@@ -3,9 +3,9 @@
 {% block page_title %}Edit Job{% endblock %}
 {% block content %}
     <h1>Edit "{{ job.title }}"</h1>
-    <form method="post" enctype="multipart/form-data" class="form">
+    <form method="post" enctype="multipart/form-data" class="form" style="max-width:620px;">
         {% csrf_token %}
-        {{ form.as_p }}
+        {% include "jobs/_job_form_fields.html" %}
         <button type="submit" class="btn btn-primary">Save Changes</button>
     </form>
 {% endblock %}

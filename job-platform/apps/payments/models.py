@@ -81,3 +81,66 @@ class CommissionLedgerEntry(models.Model):
 
     def __str__(self):
         return f"Commission Rs. {self.amount} from Payment #{self.payment_id}"
+
+
+class WorkerWallet(models.Model):
+    """
+    A worker's prepaid balance. Many jobs on platforms like this get paid
+    in cash directly between client and worker, so the app can't always
+    skim its 10% off the transaction itself - instead the worker keeps a
+    top-up balance that covers the commission, and needs at least that
+    much sitting in the wallet before they're allowed to take a job.
+    """
+
+    worker = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="wallet")
+    balance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Wallet: {self.worker.username} - Rs. {self.balance}"
+
+    def has_sufficient_balance(self, job_budget):
+        required = calculate_split(job_budget)["platform_fee"]
+        return self.balance >= required
+
+    def credit(self, amount):
+        WorkerWallet.objects.filter(pk=self.pk).update(balance=models.F("balance") + amount)
+        self.refresh_from_db()
+
+    def debit(self, amount):
+        WorkerWallet.objects.filter(pk=self.pk).update(balance=models.F("balance") - amount)
+        self.refresh_from_db()
+
+
+class WalletTopup(models.Model):
+    """
+    A worker adding money to their wallet. This is a real deposit into the
+    platform's own collection account (eSewa/Khalti/bank) - the worker's
+    wallet balance is simply the platform's record of how much of that
+    money is theirs to draw against for commission.
+    """
+
+    class Status(models.TextChoices):
+        PENDING = "PENDING", "Pending"
+        SUCCESS = "SUCCESS", "Success"
+        FAILED = "FAILED", "Failed"
+
+    class Method(models.TextChoices):
+        ESEWA = "ESEWA", "eSewa"
+        KHALTI = "KHALTI", "Khalti"
+        BANK = "BANK", "Bank Transfer"
+        CARD = "CARD", "Card"
+
+    worker = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="topups")
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    method = models.CharField(max_length=10, choices=Method.choices, default=Method.ESEWA)
+    status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
+    transaction_id = models.CharField(max_length=100, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    credited_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"Topup Rs. {self.amount} - {self.worker.username} ({self.status})"

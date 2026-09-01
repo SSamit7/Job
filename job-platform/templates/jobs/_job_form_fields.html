@@ -1,0 +1,87 @@
+{% load static %}
+<p>
+    <label for="{{ form.category.id_for_label }}">{{ form.category.label }}</label>
+    {{ form.category }}
+    {% for error in form.category.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+</p>
+<p>
+    <label for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+    {{ form.title }}
+    {% for error in form.title.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+</p>
+<p>
+    <label for="{{ form.description.id_for_label }}">{{ form.description.label }}</label>
+    {{ form.description }}
+    {% for error in form.description.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+</p>
+
+<div class="card" style="margin: 18px 0;">
+    <div class="rail-card-head" style="margin-bottom:12px;">
+        <h4 style="margin:0;">Working location</h4>
+        <button type="button" id="use-current-location" class="btn btn-outline btn-sm">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>
+            Use my current location
+        </button>
+    </div>
+    <p id="geo-status" class="muted" style="margin-bottom:12px;"></p>
+
+    <p>
+        <label for="{{ form.location.id_for_label }}">{{ form.location.label }}</label>
+        {{ form.location }}
+    </p>
+    <p>
+        <label for="{{ form.address.id_for_label }}">{{ form.address.label }}</label>
+        {{ form.address }}
+    </p>
+    <div style="display:flex; gap:14px;">
+        <p style="flex:1;">
+            <label for="{{ form.latitude.id_for_label }}">{{ form.latitude.label }}</label>
+            {{ form.latitude }}
+        </p>
+        <p style="flex:1;">
+            <label for="{{ form.longitude.id_for_label }}">{{ form.longitude.label }}</label>
+            {{ form.longitude }}
+        </p>
+    </div>
+    <p class="muted" style="margin-top:-6px;">You can also type coordinates by hand — the map below updates as you edit them.</p>
+
+    <div id="location-map-wrap" style="border-radius:var(--radius-sm); overflow:hidden; border:1px solid var(--border); height:260px;">
+        <iframe id="location-map" width="100%" height="100%" frameborder="0" style="border:0;"
+                src="https://maps.google.com/maps?q=27.7172,85.3240&z=12&output=embed"
+                allowfullscreen loading="lazy"></iframe>
+    </div>
+</div>
+
+<div class="card" style="margin-bottom: 18px;">
+    <h4 style="margin-bottom:12px;">Working schedule</h4>
+    <div style="display:flex; gap:14px; flex-wrap:wrap;">
+        <p style="flex:1; min-width:150px;">
+            <label for="{{ form.scheduled_date.id_for_label }}">{{ form.scheduled_date.label }}</label>
+            {{ form.scheduled_date }}
+        </p>
+        <p style="flex:1; min-width:150px;">
+            <label for="{{ form.start_time.id_for_label }}">{{ form.start_time.label }}</label>
+            {{ form.start_time }}
+        </p>
+        <p style="flex:1; min-width:150px;">
+            <label for="{{ form.estimated_duration_hours.id_for_label }}">{{ form.estimated_duration_hours.label }}</label>
+            {{ form.estimated_duration_hours }}
+        </p>
+    </div>
+</div>
+
+<p>
+    <label for="{{ form.budget.id_for_label }}">{{ form.budget.label }}</label>
+    {{ form.budget }}
+    {% for error in form.budget.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+</p>
+<p>
+    <label for="{{ form.deadline.id_for_label }}">{{ form.deadline.label }}</label>
+    {{ form.deadline }}
+</p>
+<p>
+    <label for="{{ form.image.id_for_label }}">{{ form.image.label }}</label>
+    {{ form.image }}
+</p>
+
+<script src="{% static 'js/jobs.js' %}"></script>

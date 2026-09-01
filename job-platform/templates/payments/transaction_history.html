@@ -3,6 +3,9 @@
 {% block page_title %}Transactions{% endblock %}
 {% block content %}
     <h1>Transaction History</h1>
+    {% if user.is_worker %}
+        <p>Looking for your wallet balance and top-ups instead? <a href="{% url 'payments:wallet' %}" style="color:var(--violet-600);font-weight:600;">Go to My Wallet</a>.</p>
+    {% endif %}
     <table class="table">
         <thead><tr><th>Job</th><th>Total</th><th>Fee</th><th>Payout</th><th>Status</th><th>Date</th></tr></thead>
         <tbody>

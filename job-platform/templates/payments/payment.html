@@ -1,23 +1,35 @@
 {% extends "base.html" %}
 {% block title %}Pay - {{ contract.job.title }}{% endblock %}
 {% block page_title %}Payment{% endblock %}
+{% block extra_css %}
+<style>
+.method-options { display: flex; gap: 10px; flex-wrap: wrap; margin: 6px 0 18px; }
+.method-options label {
+  flex: 1; min-width: 110px; display: flex; align-items: center; justify-content: center;
+  gap: 8px; padding: 12px; border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  cursor: pointer; font-weight: 600; font-size: 0.85rem; color: var(--ink-600);
+}
+.method-options input { display: none; }
+.method-options label:has(input:checked) { border-color: var(--violet-600); background: var(--violet-50); color: var(--violet-700); }
+</style>
+{% endblock %}
 {% block content %}
     <h1>Payment for "{{ contract.job.title }}"</h1>
-    <div class="payment-breakdown">
-        <p>Total amount: <strong>{{ split.total }}</strong></p>
-        <p>Platform commission (10%): {{ split.platform_fee }}</p>
-        <p>Worker receives (90%): {{ split.worker_payout }}</p>
+    <div class="payment-breakdown" style="max-width:420px;">
+        <p>Total amount: <strong>Rs. {{ split.total }}</strong></p>
+        <p>Platform commission (10%): Rs. {{ split.platform_fee }}</p>
+        <p>Worker receives (90%): Rs. {{ split.worker_payout }}</p>
     </div>
 
-    <form method="post" action="{% url 'payments:process_payment' contract.pk %}" class="form">
+    <form method="post" action="{% url 'payments:process_payment' contract.pk %}" class="form" style="max-width:420px;">
         {% csrf_token %}
-        <label>Payment method</label>
-        <select name="method">
-            <option value="CARD">Card</option>
-            <option value="ESEWA">eSewa</option>
-            <option value="KHALTI">Khalti</option>
-            <option value="BANK">Bank Transfer</option>
-        </select>
-        <button type="submit" class="btn btn-primary">Pay {{ split.total }}</button>
+        <label style="margin-bottom:6px;">Payment method</label>
+        <div class="method-options">
+            <label><input type="radio" name="method" value="ESEWA" checked> <span>eSewa</span></label>
+            <label><input type="radio" name="method" value="KHALTI"> <span>Khalti</span></label>
+            <label><input type="radio" name="method" value="CARD"> <span>Card</span></label>
+            <label><input type="radio" name="method" value="BANK"> <span>Bank</span></label>
+        </div>
+        <button type="submit" class="btn btn-primary">Pay Rs. {{ split.total }}</button>
     </form>
 {% endblock %}

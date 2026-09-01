@@ -74,3 +74,10 @@ class Job(models.Model):
             query = f"{self.address}, {self.location}".strip(", ")
             return f"https://www.google.com/maps/search/?api=1&query={query.replace(' ', '+')}"
         return None
+
+    @property
+    def required_commission(self):
+        """The wallet balance a worker must hold to take this job."""
+        from apps.payments.services import calculate_split  # local import: payments has no reverse dependency on jobs
+
+        return calculate_split(self.budget)["platform_fee"]

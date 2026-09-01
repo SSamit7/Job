@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Payment, PlatformWallet, CommissionLedgerEntry
+from .models import Payment, PlatformWallet, CommissionLedgerEntry, WorkerWallet, WalletTopup
 
 
 @admin.register(Payment)
@@ -29,3 +29,15 @@ class CommissionLedgerEntryAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         # Entries are only ever created by credit_commission(), never by hand.
         return False
+
+
+@admin.register(WorkerWallet)
+class WorkerWalletAdmin(admin.ModelAdmin):
+    list_display = ["worker", "balance", "updated_at"]
+    search_fields = ["worker__username"]
+
+
+@admin.register(WalletTopup)
+class WalletTopupAdmin(admin.ModelAdmin):
+    list_display = ["id", "worker", "amount", "method", "status", "created_at"]
+    list_filter = ["status", "method"]

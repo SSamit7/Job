@@ -44,6 +44,10 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
                 Availability
             </a>
+            <a href="{% url 'payments:wallet' %}" class="{% if request.resolver_match.view_name == 'payments:wallet' %}active{% endif %}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/><circle cx="16" cy="14" r="1.1" fill="currentColor" stroke="none"/></svg>
+                Wallet
+            </a>
             {% else %}
             <a href="{% url 'jobs:job_create' %}" class="{% if request.resolver_match.view_name == 'jobs:job_create' %}active{% endif %}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
