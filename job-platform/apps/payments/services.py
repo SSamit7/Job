@@ -4,6 +4,7 @@ Never hardcode `* 0.9` or `* 0.1` anywhere else in the codebase -
 always call calculate_split() so the rate stays configurable in one spot.
 """
 from decimal import Decimal, ROUND_HALF_UP
+from django.utils.timezone import now as timezone_now
 
 PLATFORM_COMMISSION_RATE = Decimal("0.10")  # 10% held by the platform
 
@@ -51,12 +52,17 @@ def credit_topup(topup):
     """
     Called once a top-up 'lands' in the platform's collection account.
     Credits the worker's internal wallet ledger by the same amount.
-    Safe to call more than once: only ever credits a given topup once.
+    Idempotency is based solely on `credited_at` - the caller should NOT
+    set that field itself before calling this, or it will look like it's
+    already been credited and the balance will never actually move.
     """
     from .models import WorkerWallet
 
-    if topup.status == topup.Status.SUCCESS and topup.credited_at:
+    if topup.credited_at:
         return  # already credited - never double-credit a retried call
 
     wallet, _ = WorkerWallet.objects.get_or_create(worker=topup.worker)
     wallet.credit(topup.amount)
+
+    topup.credited_at = timezone_now()
+    topup.save(update_fields=["credited_at"])

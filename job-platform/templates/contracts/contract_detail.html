@@ -5,7 +5,7 @@
     <h1>Contract for "{{ contract.job.title }}"</h1>
     <p>Client: {{ contract.client.username }}</p>
     <p>Worker: {{ contract.worker.username }}</p>
-    <p>Agreed amount: {{ contract.agreed_amount }}</p>
+    <p>Agreed amount: Rs. {{ contract.agreed_amount }}</p>
     <p>Status: {{ contract.get_status_display }}</p>
 
     {% if user == contract.client and contract.status == "ACTIVE" %}
@@ -19,6 +19,20 @@
         {% if contract.payment.status == "SUCCESS" %}
             <p class="badge">Paid on {{ contract.payment.paid_at|date:"M d, Y" }}</p>
             <a href="{% url 'reviews:create_review' contract.pk %}" class="btn btn-secondary">Leave a Review</a>
+
+            <div class="card" style="max-width:420px;margin-top:18px;background:var(--violet-50);border:none;">
+                <h4 style="margin-bottom:10px;">Contact details</h4>
+                <p class="muted" style="margin-bottom:12px;">Payment is confirmed and the commission has been credited to the platform — here's how to reach each other directly.</p>
+                {% if user == contract.client %}
+                    <p style="margin-bottom:2px;"><strong>{{ contract.worker.username }}</strong> (worker)</p>
+                    <p style="margin-bottom:2px;">📞 {{ contract.worker.phone|default:"Not provided" }}</p>
+                    <p style="margin-bottom:0;">✉️ {{ contract.worker.email }}</p>
+                {% else %}
+                    <p style="margin-bottom:2px;"><strong>{{ contract.client.username }}</strong> (client)</p>
+                    <p style="margin-bottom:2px;">📞 {{ contract.client.phone|default:"Not provided" }}</p>
+                    <p style="margin-bottom:0;">✉️ {{ contract.client.email }}</p>
+                {% endif %}
+            </div>
         {% else %}
             <a href="{% url 'payments:initiate_payment' contract.pk %}" class="btn btn-primary">Proceed to Payment</a>
         {% endif %}

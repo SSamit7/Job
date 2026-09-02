@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Bank Transfer{% endblock %}
+{% block page_title %}Bank Transfer{% endblock %}
+{% block content %}
+<div class="auth-card" style="text-align:center;">
+    <p class="muted" style="margin-bottom:4px;text-align:left;"><a href="{% url 'payments:initiate_payment' payment.contract.pk %}" style="color:var(--violet-600);">&larr; Back to checkout</a></p>
+    <h1>Transfer Rs. {{ payment.total_amount }}</h1>
+    <p>Send this amount to JobPlatform's account. Once confirmed, 90% is released to {{ payment.contract.worker.username }} and 10% is credited as platform commission.</p>
+
+    <img src="{{ qr_image_url }}" alt="Bank account details QR" style="width:200px;height:200px;margin:16px auto;border-radius:var(--radius-md);border:1px solid var(--border);padding:10px;">
+
+    <div class="card" style="text-align:left;margin-bottom:18px;">
+        <p style="margin-bottom:4px;"><strong>Account name:</strong> JobPlatform Pvt Ltd</p>
+        <p style="margin-bottom:4px;"><strong>Account number:</strong> 0123456789012</p>
+        <p style="margin-bottom:4px;"><strong>Bank:</strong> Nepal Investment Bank</p>
+        <p style="margin-bottom:0;"><strong>Reference (please include this):</strong> PAY-{{ payment.pk }}</p>
+    </div>
+
+    {% if payment.status == "PENDING" %}
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary btn-block">I've sent the transfer</button>
+        </form>
+        <p class="muted" style="margin-top:10px;">This is manual, not instant like eSewa/Khalti — the worker gets paid once the platform confirms receipt.</p>
+    {% else %}
+        <span class="badge badge-neutral">Status: {{ payment.get_status_display }}</span>
+    {% endif %}
+</div>
+{% endblock %}

@@ -6,13 +6,14 @@ class PaymentMethodForm(forms.Form):
     method = forms.ChoiceField(choices=Payment.Method.choices, widget=forms.RadioSelect)
 
 
-class TopupForm(forms.ModelForm):
+class TopupAmountForm(forms.ModelForm):
+    """Used on the amount-entry step, after a top-up method has already been picked."""
+
     class Meta:
         model = WalletTopup
-        fields = ["amount", "method"]
+        fields = ["amount"]
         widgets = {
-            "method": forms.RadioSelect,
-            "amount": forms.NumberInput(attrs={"min": "50", "step": "10", "placeholder": "e.g. 500"}),
+            "amount": forms.NumberInput(attrs={"min": "50", "step": "10", "placeholder": "e.g. 500", "autofocus": True}),
         }
 
     def clean_amount(self):

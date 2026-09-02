@@ -1,8 +1,11 @@
 {% extends "base.html" %}
-{% block title %}Payment Failed{% endblock %}
-{% block page_title %}Payment Failed{% endblock %}
+{% block title %}Payment {{ payment.get_status_display }}{% endblock %}
+{% block page_title %}Payment {{ payment.get_status_display }}{% endblock %}
 {% block content %}
-    <h1>Payment Failed</h1>
-    <p>Something went wrong processing your payment. Please try again.</p>
-    <a href="{% url 'payments:initiate_payment' payment.contract.pk %}" class="btn btn-primary">Retry Payment</a>
+<div class="auth-card" style="text-align:center;">
+    <h1>Payment {{ payment.get_status_display }}</h1>
+    <p>{{ payment.failure_reason|default:"Something went wrong verifying your payment with the gateway." }}</p>
+    <p class="muted">Nothing was charged, and no commission was credited. Contract status is unchanged.</p>
+    <a href="{% url 'payments:initiate_payment' payment.contract.pk %}" class="btn btn-primary">Try Again</a>
+</div>
 {% endblock %}

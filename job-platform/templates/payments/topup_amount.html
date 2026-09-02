@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Top Up via {{ method_label }}{% endblock %}
+{% block page_title %}Top Up{% endblock %}
+{% block content %}
+<div class="auth-card">
+    <p class="muted" style="margin-bottom:4px;"><a href="{% url 'payments:wallet' %}" style="color:var(--violet-600);">&larr; Back to wallet</a></p>
+    <h1>Top up via {{ method_label }}</h1>
+    <p>
+        {% if method == "ESEWA" %}
+            Enter an amount — you'll be redirected to eSewa's own secure sandbox page to complete payment.
+        {% elif method == "KHALTI" %}
+            Enter an amount — you'll be redirected to Khalti's own secure checkout to complete payment.
+        {% else %}
+            Enter an amount — you'll get JobPlatform's bank details to transfer to directly.
+        {% endif %}
+    </p>
+
+    <form method="post" class="form">
+        {% csrf_token %}
+        <p>
+            <label for="{{ form.amount.id_for_label }}">Amount (Rs.)</label>
+            {{ form.amount }}
+            {% for error in form.amount.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+        </p>
+        <button type="submit" class="btn btn-primary btn-block">Continue</button>
+    </form>
+</div>
+{% endblock %}

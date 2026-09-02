@@ -10,9 +10,9 @@ class Payment(models.Model):
         PENDING = "PENDING", "Pending"
         SUCCESS = "SUCCESS", "Success"
         FAILED = "FAILED", "Failed"
+        CANCELLED = "CANCELLED", "Cancelled"
 
     class Method(models.TextChoices):
-        CARD = "CARD", "Card"
         ESEWA = "ESEWA", "eSewa"
         KHALTI = "KHALTI", "Khalti"
         BANK = "BANK", "Bank Transfer"
@@ -22,9 +22,13 @@ class Payment(models.Model):
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
     platform_fee = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     worker_payout = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-    method = models.CharField(max_length=10, choices=Method.choices, default=Method.CARD)
+    method = models.CharField(max_length=10, choices=Method.choices, default=Method.ESEWA)
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
-    transaction_id = models.CharField(max_length=100, blank=True)
+    gateway_reference = models.CharField(
+        max_length=100, blank=True, help_text="eSewa transaction_uuid or Khalti pidx - used to match the callback"
+    )
+    transaction_id = models.CharField(max_length=100, blank=True, help_text="The gateway's own transaction ID once paid")
+    failure_reason = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     paid_at = models.DateTimeField(blank=True, null=True)
 
@@ -124,18 +128,22 @@ class WalletTopup(models.Model):
         PENDING = "PENDING", "Pending"
         SUCCESS = "SUCCESS", "Success"
         FAILED = "FAILED", "Failed"
+        CANCELLED = "CANCELLED", "Cancelled"
 
     class Method(models.TextChoices):
         ESEWA = "ESEWA", "eSewa"
         KHALTI = "KHALTI", "Khalti"
         BANK = "BANK", "Bank Transfer"
-        CARD = "CARD", "Card"
 
     worker = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="topups")
     amount = models.DecimalField(max_digits=10, decimal_places=2)
     method = models.CharField(max_length=10, choices=Method.choices, default=Method.ESEWA)
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
-    transaction_id = models.CharField(max_length=100, blank=True)
+    gateway_reference = models.CharField(
+        max_length=100, blank=True, help_text="eSewa transaction_uuid or Khalti pidx - used to match the callback"
+    )
+    transaction_id = models.CharField(max_length=100, blank=True, help_text="The gateway's own transaction ID once paid")
+    failure_reason = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     credited_at = models.DateTimeField(blank=True, null=True)
 

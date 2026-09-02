@@ -2,11 +2,35 @@
 {% block title %}Payment Successful{% endblock %}
 {% block page_title %}Payment Successful{% endblock %}
 {% block content %}
-    <h1>Payment Successful</h1>
-    <p>Transaction ID: {{ payment.transaction_id }}</p>
-    <p>Total paid: {{ payment.total_amount }}</p>
-    <p>Platform commission: {{ payment.platform_fee }}</p>
-    <p class="muted">Credited automatically to the platform wallet — no action needed from anyone.</p>
-    <p>Worker payout: {{ payment.worker_payout }}</p>
-    <a href="{% url 'reviews:create_review' payment.contract.pk %}" class="btn btn-primary">Leave a Review</a>
+<div class="checkout-summary-card" style="max-width:480px;">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">
+        <span style="width:38px;height:38px;border-radius:50%;background:var(--green-50);color:var(--green-600);display:flex;align-items:center;justify-content:center;font-size:1.2rem;">✓</span>
+        <h1 style="margin:0;">Payment Successful</h1>
+    </div>
+    <p class="muted" style="margin-bottom:16px;">Verified via {{ payment.get_method_display }} &middot; Ref: {{ payment.transaction_id|default:payment.gateway_reference }}</p>
+
+    <div class="checkout-breakdown-row">
+        <span class="muted-label">Total paid</span>
+        <span>Rs. {{ payment.total_amount }}</span>
+    </div>
+    <div class="checkout-breakdown-row">
+        <span class="muted-label">Platform commission (10%)</span>
+        <span>Rs. {{ payment.platform_fee }}</span>
+    </div>
+    <div class="checkout-breakdown-row">
+        <span>Worker received (90%)</span>
+        <span>Rs. {{ payment.worker_payout }}</span>
+    </div>
+    <p class="muted" style="margin-top:10px;margin-bottom:0;">Commission credited automatically to the admin's platform wallet — no action needed from anyone.</p>
+</div>
+
+<div class="card" style="max-width:480px;margin:18px 0;background:var(--violet-50);border:none;">
+    <h4 style="margin-bottom:10px;">Contact details</h4>
+    <p class="muted" style="margin-bottom:12px;">Payment is confirmed — here's how to reach the worker directly.</p>
+    <p style="margin-bottom:2px;"><strong>{{ payment.contract.worker.username }}</strong> (worker)</p>
+    <p style="margin-bottom:2px;">📞 {{ payment.contract.worker.phone|default:"Not provided" }}</p>
+    <p style="margin-bottom:0;">✉️ {{ payment.contract.worker.email }}</p>
+</div>
+
+<a href="{% url 'reviews:create_review' payment.contract.pk %}" class="btn btn-primary">Leave a Review</a>
 {% endblock %}

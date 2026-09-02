@@ -95,3 +95,29 @@ LOGOUT_REDIRECT_URL = "core:home"
 
 # Platform business rule: commission % held on every completed job payment
 PLATFORM_COMMISSION_PERCENT = 10
+
+# --- Payment gateway settings ---
+# Used to build absolute success/failure/return URLs the user's browser gets
+# redirected back to after paying at eSewa/Khalti. Safe as localhost for dev -
+# these are browser redirects, not server-to-server calls, so the gateway
+# never needs to reach this URL itself. Set to your real domain in production.
+SITE_BASE_URL = os.getenv("SITE_BASE_URL", "http://127.0.0.1:8000")
+
+# eSewa ePay v2. EPAYTEST / this exact secret key are eSewa's own PUBLISHED
+# sandbox test credentials (developer.esewa.com.np) - safe to ship as
+# defaults, no signup needed to test with them. For production: get your
+# real merchant code + secret key from the eSewa Merchant Dashboard, and
+# switch the two URLs below to the *.esewa.com.np (non-uat/non-rc) hosts.
+ESEWA_MERCHANT_CODE = os.getenv("ESEWA_MERCHANT_CODE", "EPAYTEST")
+ESEWA_SECRET_KEY = os.getenv("ESEWA_SECRET_KEY", "8gBm/:&EnhH.1/q")
+ESEWA_PAYMENT_URL = os.getenv("ESEWA_PAYMENT_URL", "https://rc-epay.esewa.com.np/api/epay/main/v2/form")
+ESEWA_STATUS_CHECK_URL = os.getenv("ESEWA_STATUS_CHECK_URL", "https://uat.esewa.com.np/api/epay/transaction/status/")
+
+# Khalti KPG-2 ePayment. Unlike eSewa, Khalti has no universal public test
+# key - sign up free at https://test-admin.khalti.com, grab your sandbox
+# secret key from that dashboard, and put it in .env as KHALTI_SECRET_KEY.
+# Left blank by default; the Khalti option tells the worker it isn't set up
+# yet rather than pretending to work.
+KHALTI_SECRET_KEY = os.getenv("KHALTI_SECRET_KEY", "")
+KHALTI_INITIATE_URL = os.getenv("KHALTI_INITIATE_URL", "https://dev.khalti.com/api/v2/epayment/initiate/")
+KHALTI_LOOKUP_URL = os.getenv("KHALTI_LOOKUP_URL", "https://dev.khalti.com/api/v2/epayment/lookup/")

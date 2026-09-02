@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Redirecting to eSewa{% endblock %}
+{% block page_title %}Redirecting to eSewa{% endblock %}
+{% block content %}
+<div class="auth-card" style="text-align:center;">
+    <h1>Redirecting you to eSewa…</h1>
+    <p>Complete the Rs. {{ amount }} payment on eSewa's own secure page. You'll be brought back here automatically once it's done.</p>
+
+    <div class="card" style="background:var(--violet-50);border:none;text-align:left;margin:16px 0;">
+        <p class="muted" style="margin-bottom:6px;"><strong>This is eSewa's sandbox (test) environment</strong> — no real money moves. Log in with:</p>
+        <p class="muted" style="margin-bottom:2px;">eSewa ID: 9806800001 (or …002 – …005)</p>
+        <p class="muted" style="margin-bottom:2px;">Password: Nepal@123</p>
+        <p class="muted" style="margin-bottom:0;">MPIN: 1122 &middot; OTP/Token: 123456</p>
+    </div>
+
+    <form id="esewa-form" method="POST" action="{{ esewa_url }}">
+        {% for name, value in fields.items %}
+            <input type="hidden" name="{{ name }}" value="{{ value }}">
+        {% endfor %}
+        <noscript>
+            <p>JavaScript is disabled — click below to continue.</p>
+            <button type="submit" class="btn btn-primary">Continue to eSewa</button>
+        </noscript>
+    </form>
+    <p class="muted" style="margin-top:14px;">Not redirected automatically? <a href="#" onclick="document.getElementById('esewa-form').submit(); return false;" style="color:var(--violet-600);">Click here</a>.</p>
+</div>
+<script>
+    document.getElementById('esewa-form').submit();
+</script>
+{% endblock %}
