@@ -7,14 +7,28 @@
     <h1>Transfer Rs. {{ payment.total_amount }}</h1>
     <p>Send this amount to JobPlatform's account. Once confirmed, 90% is released to {{ payment.contract.worker.username }} and 10% is credited as platform commission.</p>
 
-    <img src="{{ qr_image_url }}" alt="Bank account details QR" style="width:200px;height:200px;margin:16px auto;border-radius:var(--radius-md);border:1px solid var(--border);padding:10px;">
+    {% if wallet_account.qr_code_image %}
+        <img src="{{ wallet_account.qr_code_image.url }}" alt="Scan to pay" style="width:220px;height:220px;object-fit:contain;margin:16px auto;border-radius:var(--radius-md);border:1px solid var(--border);padding:10px;background:#fff;">
+        <p class="muted" style="margin-top:-8px;margin-bottom:16px;">This is our real payment QR — scan it with your eSewa/Khalti/banking app.</p>
+    {% else %}
+        <img src="{{ qr_image_url }}" alt="Bank account details QR" style="width:200px;height:200px;margin:16px auto;border-radius:var(--radius-md);border:1px solid var(--border);padding:10px;">
+        <p class="muted" style="margin-top:-8px;margin-bottom:16px;">This QR just encodes the account details below for convenience — scanning it won't trigger a payment. An admin can upload a real payable QR in Django admin.</p>
+    {% endif %}
 
-    <div class="card" style="text-align:left;margin-bottom:18px;">
-        <p style="margin-bottom:4px;"><strong>Account name:</strong> JobPlatform Pvt Ltd</p>
-        <p style="margin-bottom:4px;"><strong>Account number:</strong> 0123456789012</p>
-        <p style="margin-bottom:4px;"><strong>Bank:</strong> Nepal Investment Bank</p>
+    <div class="card" style="text-align:left;margin-bottom:14px;">
+        <p style="margin-bottom:4px;"><strong>Account name:</strong> {{ wallet_account.bank_account_name|default:"JobPlatform Pvt Ltd" }}</p>
+        <p style="margin-bottom:4px;"><strong>Account number:</strong> {{ wallet_account.bank_account_number|default:"Not set yet - contact support" }}</p>
+        <p style="margin-bottom:4px;"><strong>Bank:</strong> {{ wallet_account.bank_name|default:"Not set yet - contact support" }}</p>
         <p style="margin-bottom:0;"><strong>Reference (please include this):</strong> PAY-{{ payment.pk }}</p>
     </div>
+
+    {% if wallet_account.esewa_id or wallet_account.khalti_id %}
+    <div class="card" style="text-align:left;margin-bottom:18px;background:var(--violet-50);border:none;">
+        <p class="muted" style="margin-bottom:6px;"><strong>Prefer to send directly to our wallet ID instead?</strong></p>
+        {% if wallet_account.esewa_id %}<p style="margin-bottom:2px;">eSewa ID: {{ wallet_account.esewa_id }}</p>{% endif %}
+        {% if wallet_account.khalti_id %}<p style="margin-bottom:0;">Khalti ID: {{ wallet_account.khalti_id }}</p>{% endif %}
+    </div>
+    {% endif %}
 
     {% if payment.status == "PENDING" %}
         <form method="post">

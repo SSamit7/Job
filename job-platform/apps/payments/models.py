@@ -45,14 +45,39 @@ class Payment(models.Model):
 
 class PlatformWallet(models.Model):
     """
-    Singleton row = the admin/platform's commission balance.
-    There is only ever one row (pk=1). No token or credit purchase is
+    Singleton row = the admin/platform's commission balance AND the
+    receiving-account details shown to workers/clients on the manual
+    (bank/QR) top-up and payment pages. No token or credit purchase is
     involved anywhere in this flow - the wallet is credited automatically
     out of each successful payment's 10% commission, the same way
     Pathao/Uber-style platforms take their cut at the moment of payment.
     """
 
     balance = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+
+    # --- Where workers/clients actually send money for manual top-ups ---
+    # Editable from Django admin (Payments > Platform wallet) - not hardcoded
+    # in any template, so the admin can update these without touching code.
+    esewa_id = models.CharField(
+        max_length=20, blank=True, help_text="The platform's own eSewa ID (phone number), shown on manual top-up pages"
+    )
+    khalti_id = models.CharField(
+        max_length=20, blank=True, help_text="The platform's own Khalti ID (phone number)"
+    )
+    bank_account_name = models.CharField(max_length=150, blank=True, default="JobPlatform Pvt Ltd")
+    bank_account_number = models.CharField(max_length=50, blank=True)
+    bank_name = models.CharField(max_length=150, blank=True)
+    qr_code_image = models.ImageField(
+        upload_to="wallet_qr/",
+        blank=True,
+        null=True,
+        help_text=(
+            "Upload your real eSewa/Khalti/bank payment QR code (a photo or export from the "
+            "eSewa/Khalti app, or your bank's QR). Shown on the manual top-up/payment pages instead "
+            "of the auto-generated placeholder QR, so scanning it actually pays the right account."
+        ),
+    )
+
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:

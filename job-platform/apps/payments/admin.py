@@ -25,7 +25,19 @@ class PaymentAdmin(admin.ModelAdmin):
 
 @admin.register(PlatformWallet)
 class PlatformWalletAdmin(admin.ModelAdmin):
-    list_display = ["balance", "updated_at"]
+    list_display = ["balance", "esewa_id", "khalti_id", "bank_account_number", "updated_at"]
+    fieldsets = (
+        ("Commission balance", {"fields": ("balance",)}),
+        (
+            "Receiving account details (shown to users on manual top-up/payment pages)",
+            {"fields": ("esewa_id", "khalti_id", "bank_account_name", "bank_account_number", "bank_name")},
+        ),
+        (
+            "Your own QR code",
+            {"fields": ("qr_code_image",), "description": "Upload your real payment QR code to replace the auto-generated placeholder."},
+        ),
+    )
+    readonly_fields = ["balance"]
 
     def has_add_permission(self, request):
         # Singleton - never create a second wallet row from the admin.

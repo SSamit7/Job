@@ -6,6 +6,8 @@ from apps.jobs.models import Job
 from apps.contracts.models import Contract
 from apps.payments.models import WorkerWallet
 from apps.payments.services import required_commission_for
+from apps.notifications.models import Notification
+from apps.notifications.services import notify
 from .forms import ApplicationForm
 from .models import Application
 
@@ -105,6 +107,13 @@ def select_worker_view(request, pk):
             "worker": application.worker,
             "agreed_amount": application.proposed_amount or job.budget,
         },
+    )
+
+    notify(
+        application.worker,
+        f'You were selected for "{job.title}"! A contract has been created.',
+        kind=Notification.Kind.SELECTED,
+        link=f"/contracts/",
     )
 
     messages.success(request, f"{application.worker.username} selected. Contract created.")

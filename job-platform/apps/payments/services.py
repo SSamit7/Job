@@ -42,6 +42,8 @@ def credit_commission(payment):
     CommissionLedgerEntry.objects.create(payment=payment, amount=payment.platform_fee)
     PlatformWallet.get_instance().credit(payment.platform_fee)
 
+    _notify_payment_success(payment)
+
 
 def required_commission_for(job):
     """The wallet balance a worker must hold before they can take this job."""
@@ -66,3 +68,36 @@ def credit_topup(topup):
 
     topup.credited_at = timezone_now()
     topup.save(update_fields=["credited_at"])
+
+    _notify_topup_success(topup)
+
+
+def _notify_payment_success(payment):
+    from apps.notifications.models import Notification
+    from apps.notifications.services import notify
+
+    job_title = payment.contract.job.title
+    notify(
+        payment.contract.worker,
+        f'Payment received for "{job_title}" - Rs. {payment.worker_payout} added to your earnings.',
+        kind=Notification.Kind.PAYMENT_SUCCESS,
+        link=f"/contracts/{payment.contract.pk}/",
+    )
+    notify(
+        payment.client,
+        f'Your payment for "{job_title}" went through - contact details are now visible.',
+        kind=Notification.Kind.PAYMENT_SUCCESS,
+        link=f"/contracts/{payment.contract.pk}/",
+    )
+
+
+def _notify_topup_success(topup):
+    from apps.notifications.models import Notification
+    from apps.notifications.services import notify
+
+    notify(
+        topup.worker,
+        f"Rs. {topup.amount} added to your wallet via {topup.get_method_display()}.",
+        kind=Notification.Kind.WALLET_TOPUP,
+        link="/payments/wallet/",
+    )

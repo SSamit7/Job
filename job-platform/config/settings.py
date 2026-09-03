@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     "apps.payments",
     "apps.reviews",
     "apps.core",
+    "apps.notifications",
 ]
 
 MIDDLEWARE = [
@@ -51,6 +52,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "apps.notifications.context_processors.unread_notifications",
             ],
         },
     },
@@ -121,3 +123,22 @@ ESEWA_STATUS_CHECK_URL = os.getenv("ESEWA_STATUS_CHECK_URL", "https://uat.esewa.
 KHALTI_SECRET_KEY = os.getenv("KHALTI_SECRET_KEY", "")
 KHALTI_INITIATE_URL = os.getenv("KHALTI_INITIATE_URL", "https://dev.khalti.com/api/v2/epayment/initiate/")
 KHALTI_LOOKUP_URL = os.getenv("KHALTI_LOOKUP_URL", "https://dev.khalti.com/api/v2/epayment/lookup/")
+
+# --- Email (the "off-app" notification channel) ---
+# Console backend by default: notification emails just print to the
+# runserver terminal - nothing to configure, easy to see it's working.
+# For real delivery, set EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+# in .env plus EMAIL_HOST / EMAIL_HOST_USER / EMAIL_HOST_PASSWORD / EMAIL_PORT
+# / EMAIL_USE_TLS (e.g. via SendGrid, Mailgun, or Gmail SMTP).
+EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
+EMAIL_HOST = os.getenv("EMAIL_HOST", "")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD", "")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True") == "True"
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "no-reply@jobplatform.local")
+
+# True SMS/push notifications ("their phone") need a provider like Twilio
+# (SMS) or Firebase Cloud Messaging (push) and their own API credentials -
+# not wired in here since none are available. Email above is the realistic
+# stand-in until those are added.

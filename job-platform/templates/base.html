@@ -107,9 +107,12 @@
 
             <div class="topbar-actions">
                 {% if user.is_authenticated %}
-                    <button class="icon-btn" aria-label="Notifications" type="button">
+                    <a href="{% url 'notifications:list' %}" class="icon-btn" aria-label="Notifications" style="position:relative;">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 8-3 8h18s-3-1-3-8"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
-                    </button>
+                        {% if unread_notifications_count > 0 %}
+                            <span class="notif-badge">{% if unread_notifications_count > 9 %}9+{% else %}{{ unread_notifications_count }}{% endif %}</span>
+                        {% endif %}
+                    </a>
                     <a href="{% url 'accounts:profile' %}" class="avatar-chip">
                         <span class="avatar-circle">{{ user.username|slice:":1"|upper }}</span>
                         <span class="avatar-name">{{ user.username }}</span>

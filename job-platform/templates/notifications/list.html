@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Notifications{% endblock %}
+{% block page_title %}Notifications{% endblock %}
+{% block extra_css %}
+<style>
+.notif-row {
+  display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px;
+  border: 1px solid var(--border); border-radius: var(--radius-md); margin-bottom: 8px;
+  text-decoration: none; color: var(--ink-900); background: #fff;
+}
+.notif-row.unread { background: var(--violet-50); border-color: var(--violet-100); }
+.notif-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--violet-600); margin-top: 6px; flex-shrink: 0; }
+.notif-row.read .notif-dot { visibility: hidden; }
+.notif-row-text { flex: 1; }
+.notif-row-text p { margin: 0; font-size: 0.9rem; }
+.notif-row-text span { font-size: 0.76rem; color: var(--ink-400); }
+</style>
+{% endblock %}
+{% block content %}
+<div class="rail-card-head" style="margin-bottom:16px;">
+    <h1 style="margin:0;">Notifications</h1>
+    {% if unread_notifications_count > 0 %}
+        <a href="{% url 'notifications:mark_all_read' %}" class="btn btn-outline btn-sm">Mark all as read</a>
+    {% endif %}
+</div>
+
+{% for notification in notifications %}
+    <a href="{% url 'notifications:open' notification.pk %}" class="notif-row {% if notification.is_read %}read{% else %}unread{% endif %}">
+        <span class="notif-dot"></span>
+        <div class="notif-row-text">
+            <p>{{ notification.message }}</p>
+            <span>{{ notification.created_at|timesince }} ago</span>
+        </div>
+    </a>
+{% empty %}
+    <p>No notifications yet — you'll see updates here when jobs are posted or someone applies to yours.</p>
+{% endfor %}
+{% endblock %}

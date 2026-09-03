@@ -11,6 +11,26 @@
     <p style="color:#DDD6FE;font-size:0.78rem;margin-top:8px;">Last updated {{ wallet.updated_at|timesince }} ago</p>
 </div>
 
+<div class="card" style="max-width:480px;margin-bottom:24px;">
+    <div class="rail-card-head" style="margin-bottom:10px;">
+        <h4 style="margin:0;">Receiving accounts</h4>
+        <a href="{% url 'admin:payments_platformwallet_change' wallet.pk %}" class="btn btn-primary btn-sm">Edit in admin</a>
+    </div>
+    <p class="muted" style="margin-bottom:10px;">These show up on the manual bank-transfer / QR pages workers and clients see.</p>
+    <p style="margin-bottom:4px;">eSewa ID: {{ wallet.esewa_id|default:"Not set" }}</p>
+    <p style="margin-bottom:4px;">Khalti ID: {{ wallet.khalti_id|default:"Not set" }}</p>
+    <p style="margin-bottom:4px;">Bank account: {{ wallet.bank_account_name|default:"Not set" }}{% if wallet.bank_account_number %} — {{ wallet.bank_account_number }}{% endif %}</p>
+    <p style="margin-bottom:{% if wallet.qr_code_image %}12{% else %}0{% endif %}px;">Bank: {{ wallet.bank_name|default:"Not set" }}</p>
+    {% if wallet.qr_code_image %}
+        <div style="display:flex;align-items:center;gap:12px;">
+            <img src="{{ wallet.qr_code_image.url }}" alt="Your payment QR" style="width:64px;height:64px;object-fit:contain;border:1px solid var(--border);border-radius:8px;padding:4px;background:#fff;">
+            <span class="badge badge-new">Real QR uploaded — used on payment pages</span>
+        </div>
+    {% else %}
+        <p class="muted" style="margin-top:6px;margin-bottom:0;">No QR uploaded yet — payment pages currently show an auto-generated placeholder QR that can't actually be paid.</p>
+    {% endif %}
+</div>
+
 <h4>Commission ledger</h4>
 <table class="table">
     <thead>
