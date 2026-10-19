@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Messages{% endblock %}
+{% block page_title %}Messages{% endblock %}
+{% block content %}
+<h1>Messages</h1>
+<p>Conversations unlock automatically once a job's payment is confirmed.</p>
+
+<div style="margin-top:14px;max-width:640px;">
+{% for row in rows %}
+    <a href="{% url 'messaging:conversation_detail' row.contract.pk %}" class="job-row" style="text-decoration:none;color:inherit;">
+        <span class="checkout-avatar" style="width:44px;height:44px;font-size:1rem;">{{ row.other_party.username|slice:":1"|upper }}</span>
+        <div class="job-row-main">
+            <div class="job-row-title-line">
+                <h3>{{ row.other_party.username }}</h3>
+                {% if row.unread_count > 0 %}<span class="nav-count-badge" style="margin-left:auto;">{{ row.unread_count }}</span>{% endif %}
+            </div>
+            <p class="job-row-client">{{ row.contract.job.title }}</p>
+            {% if row.last_message %}
+                <p class="muted" style="margin:4px 0 0;">{{ row.last_message.body|truncatechars:60 }} &middot; {{ row.last_message.created_at|timesince }} ago</p>
+            {% else %}
+                <p class="muted" style="margin:4px 0 0;">No messages yet — say hello.</p>
+            {% endif %}
+        </div>
+    </a>
+{% empty %}
+    <p>No conversations yet — these open up once you have a paid contract with someone.</p>
+{% endfor %}
+</div>
+{% endblock %}

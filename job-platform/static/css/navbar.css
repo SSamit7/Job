@@ -72,3 +72,9 @@
   font-weight: 700; font-family: var(--font-display); font-size: 0.9rem;
 }
 .avatar-name { font-weight: 600; font-size: 0.88rem; }
+
+.nav-count-badge {
+  margin-left: auto; background: var(--violet-600); color: #fff; font-size: 0.66rem; font-weight: 800;
+  min-width: 17px; height: 17px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center;
+  padding: 0 4px;
+}

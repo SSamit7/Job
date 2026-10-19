@@ -11,4 +11,5 @@ urlpatterns = [
     path("profile/edit/", views.edit_profile_view, name="edit_profile"),
     path("password/change/", views.change_password_view, name="change_password"),
     path("availability/", views.edit_availability_view, name="availability"),
+    path("user/<int:pk>/", views.public_profile_view, name="public_profile"),
 ]

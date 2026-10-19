@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Saved Jobs{% endblock %}
+{% block page_title %}Saved Jobs{% endblock %}
+{% block content %}
+<h1>Saved Jobs</h1>
+<p>Jobs you've bookmarked to look at again.</p>
+
+<div style="margin-top:14px;">
+{% for saved in saved_jobs %}
+    <div class="job-row">
+        <div class="job-row-icon" style="background: var(--violet-50);">🔖</div>
+        <div class="job-row-main">
+            <div class="job-row-title-line">
+                <h3><a href="{% url 'jobs:job_detail' saved.job.pk %}" style="text-decoration:none;color:inherit;">{{ saved.job.title }}</a></h3>
+                {% if saved.job.status != "OPEN" %}<span class="badge badge-neutral">{{ saved.job.get_status_display }}</span>{% endif %}
+                <form method="post" action="{% url 'jobs:toggle_save' saved.job.pk %}" style="margin-left:auto;">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{% url 'jobs:saved_jobs' %}">
+                    <button type="submit" class="save-toggle-btn saved" aria-label="Remove from saved" title="Remove from saved">
+                        <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" stroke="currentColor" stroke-width="1.8"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>
+                    </button>
+                </form>
+            </div>
+            <p class="job-row-client">{{ saved.job.client.username }}</p>
+            <div class="job-row-meta">
+                <span>{{ saved.job.location|default:"Remote" }}</span>
+                <span>Saved {{ saved.saved_at|timesince }} ago</span>
+            </div>
+        </div>
+        <div class="job-row-price">
+            <strong>Rs. {{ saved.job.budget }}</strong>
+            <span>Fixed price</span>
+        </div>
+        <div class="job-row-actions">
+            <a href="{% url 'jobs:job_detail' saved.job.pk %}" class="btn btn-outline btn-sm">View Details</a>
+            {% if saved.job.is_open %}
+                {% if saved.job.pk in applied_job_ids %}
+                    <span class="badge badge-neutral" style="text-align:center;">Applied</span>
+                {% else %}
+                    <a href="{% url 'applications:apply_job' saved.job.pk %}" class="btn btn-primary btn-sm">Apply Now</a>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+{% empty %}
+    <p>No saved jobs yet — tap the bookmark icon on any job to save it here.</p>
+{% endfor %}
+</div>
+{% endblock %}

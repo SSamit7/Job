@@ -18,7 +18,7 @@
         <tbody>
         {% for application in applications %}
             <tr>
-                <td>{{ application.worker.username }} ({{ application.worker.worker_profile.average_rating }}&#9733;)</td>
+                <td><a href="{% url 'accounts:public_profile' application.worker.pk %}">{{ application.worker.username }}</a> ({{ application.worker.worker_profile.average_rating }}&#9733;)</td>
                 <td>{{ application.proposed_amount|default:job.budget }}</td>
                 <td>{{ application.get_status_display }}</td>
                 <td>

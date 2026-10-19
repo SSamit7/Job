@@ -342,11 +342,18 @@ def platform_wallet_view(request):
         messages.error(request, "That page is for platform admins only.")
         return redirect("core:dashboard")
 
+    from .checks import payment_gateway_production_check
+
     wallet = PlatformWallet.get_instance()
     entries = CommissionLedgerEntry.objects.select_related(
         "payment", "payment__contract", "payment__contract__job"
     )[:100]
-    return render(request, "payments/platform_wallet.html", {"wallet": wallet, "entries": entries})
+    gateway_warnings = [issue.msg for issue in payment_gateway_production_check(None)]
+    return render(
+        request,
+        "payments/platform_wallet.html",
+        {"wallet": wallet, "entries": entries, "gateway_warnings": gateway_warnings},
+    )
 
 
 # ==========================================================================

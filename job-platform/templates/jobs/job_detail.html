@@ -7,8 +7,17 @@
         <div class="job-row-title-line" style="margin-bottom:4px;">
             <h1 style="margin-bottom:0;">{{ job.title }}</h1>
             <span class="badge badge-neutral">{{ job.get_status_display }}</span>
+            {% if user.is_authenticated and user.is_worker %}
+                <form method="post" action="{% url 'jobs:toggle_save' job.pk %}" style="margin-left:auto;">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    <button type="submit" class="save-toggle-btn {% if is_saved %}saved{% endif %}" aria-label="Save job" title="Save job">
+                        <svg viewBox="0 0 24 24" width="22" height="22" fill="{% if is_saved %}currentColor{% else %}none{% endif %}" stroke="currentColor" stroke-width="1.8"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>
+                    </button>
+                </form>
+            {% endif %}
         </div>
-        <p class="muted">Posted by {{ job.client.username }} &middot; {{ job.created_at|timesince }} ago</p>
+        <p class="muted">Posted by <a href="{% url 'accounts:public_profile' job.client.pk %}" style="color:var(--violet-600);">{{ job.client.username }}</a> &middot; {{ job.created_at|timesince }} ago</p>
 
         <div class="card" style="margin: 16px 0;">
             <p class="budget" style="font-size:1.3rem;margin-bottom:4px;">Rs. {{ job.budget }} <span style="font-size:0.8rem;color:var(--ink-400);font-weight:500;">fixed price</span></p>

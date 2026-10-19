@@ -1,5 +1,5 @@
 from django import forms
-from .models import Job
+from .models import Job, JobCategory
 
 
 class JobForm(forms.ModelForm):
@@ -33,7 +33,15 @@ class JobForm(forms.ModelForm):
 
 
 class JobSearchForm(forms.Form):
+    SORT_CHOICES = [
+        ("-created_at", "Newest first"),
+        ("budget_desc", "Budget: high to low"),
+        ("budget_asc", "Budget: low to high"),
+    ]
+
     q = forms.CharField(required=False, label="Keyword")
+    category = forms.ModelChoiceField(queryset=JobCategory.objects.all(), required=False, empty_label="All categories")
     location = forms.CharField(required=False)
     min_budget = forms.DecimalField(required=False)
     max_budget = forms.DecimalField(required=False)
+    sort = forms.ChoiceField(choices=SORT_CHOICES, required=False, initial="-created_at")

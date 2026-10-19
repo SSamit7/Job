@@ -13,6 +13,7 @@ urlpatterns = [
     path("payments/", include("apps.payments.urls")),
     path("reviews/", include("apps.reviews.urls")),
     path("notifications/", include("apps.notifications.urls")),
+    path("messages/", include("apps.messaging.urls")),
 ]
 
 if settings.DEBUG:

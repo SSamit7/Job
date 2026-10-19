@@ -75,3 +75,12 @@
 /* ---------- Search / filter form on the list page (fallback, non-hero) ---------- */
 .search-form { max-width: none; display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; margin-bottom: 8px; }
 .search-form p { margin: 0; }
+
+/* ---------- Save/bookmark toggle ---------- */
+.save-toggle-btn {
+  background: none; border: none; cursor: pointer; padding: 4px;
+  color: var(--ink-400); display: flex; align-items: center; justify-content: center;
+  border-radius: 6px; flex-shrink: 0;
+}
+.save-toggle-btn:hover { color: var(--violet-600); background: var(--violet-50); }
+.save-toggle-btn.saved { color: var(--violet-600); }

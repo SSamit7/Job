@@ -30,8 +30,9 @@
                 {% else %}
                     <p style="margin-bottom:2px;"><strong>{{ contract.client.username }}</strong> (client)</p>
                     <p style="margin-bottom:2px;">📞 {{ contract.client.phone|default:"Not provided" }}</p>
-                    <p style="margin-bottom:0;">✉️ {{ contract.client.email }}</p>
+                    <p style="margin-bottom:12px;">✉️ {{ contract.client.email }}</p>
                 {% endif %}
+                <a href="{% url 'messaging:conversation_detail' contract.pk %}" class="btn btn-primary btn-sm">Message {% if user == contract.client %}{{ contract.worker.username }}{% else %}{{ contract.client.username }}{% endif %}</a>
             </div>
         {% else %}
             <a href="{% url 'payments:initiate_payment' contract.pk %}" class="btn btn-primary">Proceed to Payment</a>

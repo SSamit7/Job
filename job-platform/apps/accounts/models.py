@@ -51,6 +51,9 @@ class WorkerProfile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name="worker_profile")
     skills = models.CharField(max_length=255, blank=True, help_text="Comma-separated skills")
     bio = models.TextField(blank=True)
+    education = models.CharField(
+        max_length=255, blank=True, help_text="e.g. Bachelor's in Computer Science, Tribhuvan University"
+    )
     experience_years = models.PositiveIntegerField(default=0)
     hourly_rate = models.DecimalField(max_digits=8, decimal_places=2, blank=True, null=True)
     resume = models.FileField(upload_to="documents/resumes/", blank=True, null=True)
@@ -61,6 +64,10 @@ class WorkerProfile(models.Model):
         return f"WorkerProfile: {self.user.username}"
 
     @property
+    def skills_list(self):
+        return [s.strip() for s in self.skills.split(",") if s.strip()]
+
+    @property
     def completion_percent(self):
         """Used to drive the profile-progress ring in the UI."""
         checks = [
@@ -68,6 +75,7 @@ class WorkerProfile(models.Model):
             bool(self.user.phone),
             bool(self.bio),
             bool(self.skills),
+            bool(self.education),
             bool(self.hourly_rate),
             bool(self.resume),
         ]

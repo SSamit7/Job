@@ -1,21 +1,92 @@
+/* ---------- Hamburger (mobile only) ---------- */
+.hamburger-btn {
+  display: none;
+  width: 38px; height: 38px; border-radius: 10px;
+  border: 1px solid var(--border); background: #fff; color: var(--ink-900);
+  align-items: center; justify-content: center; cursor: pointer; margin-right: 10px; flex-shrink: 0;
+}
+.hamburger-btn svg { width: 20px; height: 20px; }
+
+.sidebar-backdrop {
+  display: none;
+  position: fixed; inset: 0; background: rgba(16, 17, 20, 0.45);
+  z-index: 29; opacity: 0; transition: opacity 0.2s ease;
+}
+.sidebar-backdrop.visible { display: block; opacity: 1; }
+
+/* ---------- Wide tablets / stacked two-column layouts ---------- */
 @media (max-width: 1080px) {
-  .content-layout { grid-template-columns: 1fr; }
+  .content-layout,
+  .checkout-grid { grid-template-columns: 1fr; }
   .content-rail { position: static; }
 }
 
+/* ---------- Tablet / mobile: sidebar becomes a slide-out drawer ---------- */
 @media (max-width: 860px) {
-  .sidebar { display: none; }
-  .page-body { padding: 18px; }
+  .hamburger-btn { display: flex; }
+
+  .sidebar {
+    position: fixed; top: 0; left: 0; height: 100vh; z-index: 30;
+    width: 260px; max-width: 82vw;
+    transform: translateX(-100%);
+    transition: transform 0.22s ease;
+    box-shadow: none;
+  }
+  .sidebar.open { transform: translateX(0); box-shadow: 0 0 0 100vw rgba(0,0,0,0); }
+
+  .page-body { padding: 16px; }
   .search-bar { flex-direction: column; }
   .search-field { border-right: none; border-bottom: 1px solid var(--border); }
-  .search-bar .btn { padding: 12px; }
+  .search-bar .btn { padding: 12px; border-radius: 0 0 16px 16px; }
+
+  .wallet-options,
+  .method-card-grid,
+  .stats-grid,
+  .mini-stats { grid-template-columns: 1fr 1fr; }
+
+  .hero-search { padding: 24px 20px; }
+  .hero-pin { display: none; }
 }
 
+/* ---------- Phones ---------- */
 @media (max-width: 640px) {
-  .job-row { flex-wrap: wrap; }
-  .job-row-price { text-align: left; }
-  .job-row-actions { flex-direction: row; width: 100%; }
-  .job-grid { grid-template-columns: 1fr; }
-  .topbar { padding: 0 16px; }
+  .topbar { padding: 0 14px; }
   .avatar-name { display: none; }
+  .page-title { font-size: 0.95rem; }
+
+  .job-row { flex-wrap: wrap; padding: 14px; }
+  .job-row-price { text-align: left; order: 3; }
+  .job-row-actions { flex-direction: row; width: 100%; order: 4; }
+  .job-row-actions .btn { flex: 1; }
+  .job-grid { grid-template-columns: 1fr; }
+
+  .wallet-options,
+  .method-card-grid,
+  .stats-grid,
+  .mini-stats { grid-template-columns: 1fr; }
+
+  .method-card { padding: 14px; }
+
+  .checkout-summary-card,
+  .rail-card,
+  .card,
+  .auth-card { padding: 16px; }
+
+  .auth-card { margin: 20px auto; max-width: 92vw; }
+
+  /* Tables scroll horizontally instead of squashing/breaking layout */
+  .table { display: block; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
+
+  .chat-wrap { height: calc(100vh - 180px); }
+  .chat-bubble { max-width: 85%; }
+
+  h1 { font-size: 1.5rem; }
+  .hero-search h1 { font-size: 1.4rem; }
+
+  .form { max-width: 100%; }
+
+  .checklist-item, .availability-row { font-size: 0.82rem; }
 }
+
+/* Prevent background scroll fighting with the open drawer on touch devices */
+body:has(.sidebar.open) { overflow: hidden; }

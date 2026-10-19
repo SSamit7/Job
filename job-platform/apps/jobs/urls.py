@@ -8,6 +8,8 @@ urlpatterns = [
     path("create/", views.job_create_view, name="job_create"),
     path("mine/", views.my_jobs_view, name="my_jobs"),
     path("mine/<int:pk>/", views.my_job_detail_view, name="my_job_detail"),
+    path("saved/", views.saved_jobs_view, name="saved_jobs"),
     path("<int:pk>/", views.job_detail_view, name="job_detail"),
     path("<int:pk>/edit/", views.job_edit_view, name="job_edit"),
+    path("<int:pk>/save/", views.toggle_save_job_view, name="toggle_save"),
 ]

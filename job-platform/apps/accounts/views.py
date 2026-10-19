@@ -2,9 +2,10 @@ from django.contrib.auth import login, logout, update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm
 from django.contrib import messages
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
 from .forms import RegisterForm, UserUpdateForm, ClientProfileForm, WorkerProfileForm, AvailabilityForm
+from .models import CustomUser
 
 
 def register_view(request):
@@ -39,7 +40,23 @@ def logout_view(request):
 
 @login_required
 def profile_view(request):
-    return render(request, "accounts/profile.html", {"user_obj": request.user})
+    return render(request, "accounts/profile.html", {"user_obj": request.user, "is_own_profile": True})
+
+
+@login_required
+def public_profile_view(request, pk):
+    """Read-only view of another user's profile - no phone/email here, those stay
+    gated behind a confirmed payment (see contracts:contract_detail / payment_success)."""
+    user_obj = get_object_or_404(CustomUser, pk=pk)
+    if user_obj == request.user:
+        return redirect("accounts:profile")
+
+    context = {"user_obj": user_obj, "is_own_profile": False}
+    if user_obj.is_worker:
+        from apps.reviews.models import Review
+
+        context["reviews"] = Review.objects.filter(reviewee=user_obj).select_related("reviewer")[:10]
+    return render(request, "accounts/profile.html", context)
 
 
 @login_required

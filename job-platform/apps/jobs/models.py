@@ -81,3 +81,18 @@ class Job(models.Model):
         from apps.payments.services import calculate_split  # local import: payments has no reverse dependency on jobs
 
         return calculate_split(self.budget)["platform_fee"]
+
+
+class SavedJob(models.Model):
+    """A worker bookmarking a job to look at again later."""
+
+    worker = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="saved_jobs")
+    job = models.ForeignKey(Job, on_delete=models.CASCADE, related_name="saved_by")
+    saved_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ["worker", "job"]
+        ordering = ["-saved_at"]
+
+    def __str__(self):
+        return f"{self.worker.username} saved {self.job.title}"

@@ -5,5 +5,5 @@ from .models import Application
 class ApplicationForm(forms.ModelForm):
     class Meta:
         model = Application
-        fields = ["cover_letter", "proposed_amount"]
+        fields = ["cover_letter", "proposed_amount", "attachment"]
         widgets = {"cover_letter": forms.Textarea(attrs={"rows": 4})}

@@ -16,6 +16,10 @@
             {{ form.q }}
         </div>
         <div class="search-field">
+            <label for="id_category">Category</label>
+            {{ form.category }}
+        </div>
+        <div class="search-field">
             <label for="id_location">Location</label>
             {{ form.location }}
         </div>
@@ -28,6 +32,22 @@
             {{ form.max_budget }}
         </div>
         <button type="submit" class="btn btn-primary">Find Jobs</button>
+    </form>
+</div>
+
+<div style="display:flex;justify-content:flex-end;margin-bottom:10px;">
+    <form method="get" style="display:flex;align-items:center;gap:8px;">
+        <input type="hidden" name="q" value="{{ request.GET.q }}">
+        <input type="hidden" name="category" value="{{ request.GET.category }}">
+        <input type="hidden" name="location" value="{{ request.GET.location }}">
+        <input type="hidden" name="min_budget" value="{{ request.GET.min_budget }}">
+        <input type="hidden" name="max_budget" value="{{ request.GET.max_budget }}">
+        <label for="id_sort" class="muted" style="font-size:0.8rem;">Sort by</label>
+        <select name="sort" id="id_sort" onchange="this.form.submit()" style="border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-size:0.85rem;">
+            {% for value, label in form.fields.sort.choices %}
+                <option value="{{ value }}" {% if request.GET.sort == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
     </form>
 </div>
 
@@ -53,6 +73,15 @@
                             <span class="badge badge-new">New</span>
                         {% else %}
                             <span class="badge badge-urgent">Urgent</span>
+                        {% endif %}
+                        {% if user.is_authenticated and user.is_worker %}
+                            <form method="post" action="{% url 'jobs:toggle_save' job.pk %}" style="margin-left:auto;">
+                                {% csrf_token %}
+                                <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                                <button type="submit" class="save-toggle-btn {% if job.pk in saved_job_ids %}saved{% endif %}" aria-label="Save job" title="Save job">
+                                    <svg viewBox="0 0 24 24" width="18" height="18" fill="{% if job.pk in saved_job_ids %}currentColor{% else %}none{% endif %}" stroke="currentColor" stroke-width="1.8"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>
+                                </button>
+                            </form>
                         {% endif %}
                     </div>
                     <p class="job-row-client">{{ job.client.username }}</p>

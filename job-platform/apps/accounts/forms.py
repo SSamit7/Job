@@ -25,7 +25,7 @@ class ClientProfileForm(forms.ModelForm):
 class WorkerProfileForm(forms.ModelForm):
     class Meta:
         model = WorkerProfile
-        fields = ["skills", "bio", "experience_years", "hourly_rate", "resume"]
+        fields = ["skills", "bio", "education", "experience_years", "hourly_rate", "resume"]
 
 
 class UserUpdateForm(forms.ModelForm):

@@ -22,4 +22,5 @@ class PaymentsConfig(AppConfig):
 
     def ready(self):
         import apps.payments.signals  # noqa: F401
+        import apps.payments.checks  # noqa: F401 - registers the production-readiness system check
         post_migrate.connect(_ensure_platform_wallet, sender=self)

@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}JobPlatform{% endblock %}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <link rel="stylesheet" href="{% static 'css/navbar.css' %}">
     <link rel="stylesheet" href="{% static 'css/forms.css' %}">
@@ -41,6 +41,15 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="12" height="16" rx="2"/><path d="M9 4h6v2H9z"/><path d="M9 10h6M9 14h6"/></svg>
                 Applications
             </a>
+            <a href="{% url 'jobs:saved_jobs' %}" class="{% if request.resolver_match.view_name == 'jobs:saved_jobs' %}active{% endif %}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3.5h12a1 1 0 0 1 1 1V21l-7-4-7 4V4.5a1 1 0 0 1 1-1z"/></svg>
+                Saved Jobs
+            </a>
+            <a href="{% url 'messaging:conversation_list' %}" class="{% if 'messaging' in request.resolver_match.namespace %}active{% endif %}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H8l-4 4z"/></svg>
+                Messages
+                {% if unread_messages_count > 0 %}<span class="nav-count-badge">{{ unread_messages_count }}</span>{% endif %}
+            </a>
             <a href="{% url 'accounts:availability' %}" class="{% if request.resolver_match.view_name == 'accounts:availability' %}active{% endif %}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
                 Availability
@@ -61,6 +70,11 @@
             <a href="{% url 'applications:received_applications' %}" class="{% if request.resolver_match.view_name == 'applications:received_applications' %}active{% endif %}">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h5l2 3h4l2-3h5"/><path d="M5 5h14l2 7v7a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-7z"/></svg>
                 Applications
+            </a>
+            <a href="{% url 'messaging:conversation_list' %}" class="{% if 'messaging' in request.resolver_match.namespace %}active{% endif %}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H8l-4 4z"/></svg>
+                Messages
+                {% if unread_messages_count > 0 %}<span class="nav-count-badge">{{ unread_messages_count }}</span>{% endif %}
             </a>
             {% endif %}
 
@@ -92,10 +106,16 @@
             <p class="sidebar-footer-text">The platform holds funds in escrow and releases 90% to the worker only after the client confirms the job is done.</p>
         </div>
     </aside>
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
     {% endif %}
 
     <div class="main-wrap">
         <header class="topbar">
+            {% if user.is_authenticated %}
+                <button type="button" class="hamburger-btn" id="hamburger-btn" aria-label="Open menu">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+                </button>
+            {% endif %}
             {% if not user.is_authenticated %}
                 <a href="{% url 'core:home' %}" class="brand">
                     <span class="brand-mark">J</span>

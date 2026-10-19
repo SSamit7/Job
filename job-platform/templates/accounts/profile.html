@@ -1,24 +1,128 @@
 {% extends "base.html" %}
-{% block title %}My Profile{% endblock %}
-{% block page_title %}My Profile{% endblock %}
+{% block title %}{% if is_own_profile %}My Profile{% else %}{{ user_obj.username }}'s Profile{% endif %}{% endblock %}
+{% block page_title %}{% if is_own_profile %}My Profile{% else %}Profile{% endif %}{% endblock %}
 {% block content %}
-    <h1>{{ user_obj.username }}'s Profile</h1>
-    <p>Role: {{ user_obj.get_role_display }}</p>
-    <p>Email: {{ user_obj.email }}</p>
-    <p>Phone: {{ user_obj.phone }}</p>
 
-    {% if user_obj.is_client %}
-        <p>Company: {{ user_obj.client_profile.company_name }}</p>
-        <p>Bio: {{ user_obj.client_profile.bio }}</p>
-    {% elif user_obj.is_worker %}
-        <p>Skills: {{ user_obj.worker_profile.skills }}</p>
-        <p>Rating: {{ user_obj.worker_profile.average_rating }} / 5</p>
-        <p>Jobs completed: {{ user_obj.worker_profile.jobs_completed_count }}</p>
-    {% endif %}
+<div class="card" style="max-width:720px;margin-bottom:20px;">
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+        {% if user_obj.profile_picture %}
+            <img src="{{ user_obj.profile_picture.url }}" alt="{{ user_obj.username }}" style="width:76px;height:76px;border-radius:50%;object-fit:cover;">
+        {% else %}
+            <span class="checkout-avatar" style="width:76px;height:76px;font-size:1.8rem;">{{ user_obj.username|slice:":1"|upper }}</span>
+        {% endif %}
+        <div style="flex:1;min-width:200px;">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                <h1 style="margin-bottom:0;">{{ user_obj.username }}</h1>
+                <span class="badge badge-urgent">{{ user_obj.get_role_display }}</span>
+                {% if user_obj.is_verified %}<span class="badge badge-new">Verified</span>{% endif %}
+            </div>
+            {% if user_obj.is_worker %}
+                <p class="muted" style="margin-top:4px;margin-bottom:0;">{{ user_obj.worker_profile.average_rating }} &#9733; &middot; {{ user_obj.worker_profile.jobs_completed_count }} jobs completed</p>
+            {% elif user_obj.is_client %}
+                <p class="muted" style="margin-top:4px;margin-bottom:0;">{{ user_obj.client_profile.company_name|default:"Client" }} &middot; {{ user_obj.client_profile.jobs_posted_count }} jobs posted</p>
+            {% endif %}
+        </div>
+    </div>
 
-    <a href="{% url 'accounts:edit_profile' %}" class="btn btn-secondary">Edit Profile</a>
-    <a href="{% url 'accounts:change_password' %}" class="btn btn-secondary">Change Password</a>
-    {% if user_obj.is_worker %}
-        <a href="{% url 'accounts:availability' %}" class="btn btn-secondary">Set Availability</a>
+    {% if is_own_profile %}
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:18px;">
+            <a href="{% url 'accounts:edit_profile' %}" class="btn btn-secondary btn-sm">Edit Profile</a>
+            <a href="{% url 'accounts:change_password' %}" class="btn btn-secondary btn-sm">Change Password</a>
+            {% if user_obj.is_worker %}
+                <a href="{% url 'accounts:availability' %}" class="btn btn-secondary btn-sm">Set Availability</a>
+                <a href="{% url 'payments:wallet' %}" class="btn btn-secondary btn-sm">My Wallet</a>
+            {% endif %}
+        </div>
     {% endif %}
+</div>
+
+<div class="content-layout">
+    <div class="content-main">
+        {% if is_own_profile %}
+        <div class="card" style="margin-bottom:16px;">
+            <h4 style="margin-bottom:10px;">Contact</h4>
+            <p style="margin-bottom:4px;">✉️ {{ user_obj.email }}</p>
+            <p style="margin-bottom:0;">📞 {{ user_obj.phone|default:"Not provided" }}</p>
+        </div>
+        {% else %}
+        <div class="card" style="margin-bottom:16px;background:var(--surface);">
+            <p class="muted" style="margin-bottom:0;">🔒 Contact details unlock once you have a confirmed, paid contract together.</p>
+        </div>
+        {% endif %}
+
+        {% if user_obj.is_worker %}
+            <div class="card" style="margin-bottom:16px;">
+                <h4 style="margin-bottom:10px;">About</h4>
+                <p style="margin-bottom:0;">{{ user_obj.worker_profile.bio|default:"No bio added yet."|linebreaks }}</p>
+            </div>
+
+            <div class="card" style="margin-bottom:16px;">
+                <h4 style="margin-bottom:10px;">Skills</h4>
+                {% if user_obj.worker_profile.skills %}
+                    <div class="job-row-tags">
+                        {% for skill in user_obj.worker_profile.skills_list %}
+                            <span class="tag-pill">{{ skill }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="muted" style="margin-bottom:0;">No skills listed yet.</p>
+                {% endif %}
+            </div>
+
+            <div class="card" style="margin-bottom:16px;">
+                <h4 style="margin-bottom:10px;">Education</h4>
+                <p style="margin-bottom:0;">{{ user_obj.worker_profile.education|default:"Not provided." }}</p>
+            </div>
+
+            <div class="card" style="margin-bottom:16px;">
+                <h4 style="margin-bottom:10px;">Experience</h4>
+                <p style="margin-bottom:4px;">{{ user_obj.worker_profile.experience_years }} year{{ user_obj.worker_profile.experience_years|pluralize }} of experience</p>
+                {% if user_obj.worker_profile.hourly_rate %}<p style="margin-bottom:0;">Rs. {{ user_obj.worker_profile.hourly_rate }} / hour</p>{% endif %}
+            </div>
+
+            {% if not is_own_profile %}
+            <div class="card">
+                <h4 style="margin-bottom:12px;">Reviews</h4>
+                {% for review in reviews %}
+                    <div class="review-card">
+                        <p style="margin-bottom:2px;">{{ review.rating }} &#9733; by {{ review.reviewer.username }}</p>
+                        <p style="margin-bottom:2px;">{{ review.comment }}</p>
+                        <p class="muted" style="margin-bottom:0;">{{ review.created_at|timesince }} ago</p>
+                    </div>
+                {% empty %}
+                    <p class="muted" style="margin-bottom:0;">No reviews yet.</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+        {% elif user_obj.is_client %}
+            <div class="card">
+                <h4 style="margin-bottom:10px;">About</h4>
+                <p style="margin-bottom:0;">{{ user_obj.client_profile.bio|default:"No bio added yet."|linebreaks }}</p>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if is_own_profile and user_obj.is_worker %}
+    <aside class="content-rail">
+        <div class="rail-card">
+            <div class="rail-card-head">
+                <h4>Profile progress</h4>
+                <span class="rail-link" style="color:var(--green-600);">{{ user_obj.worker_profile.completion_percent }}% complete</span>
+            </div>
+            <div class="progress-widget">
+                <div class="progress-ring-wrap">
+                    <div class="progress-ring" style="--pct: {{ user_obj.worker_profile.completion_percent }};"></div>
+                    <div class="progress-ring-inner">{{ user_obj.worker_profile.completion_percent }}%</div>
+                </div>
+                <div class="progress-widget-text">
+                    <strong>Complete your profile</strong>
+                    <p>to get more job matches and build trust.</p>
+                </div>
+            </div>
+            <a href="{% url 'accounts:edit_profile' %}" class="rail-link">Complete now &rarr;</a>
+        </div>
+    </aside>
+    {% endif %}
+</div>
 {% endblock %}

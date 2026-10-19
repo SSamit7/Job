@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Chat with {{ other_party.username }}{% endblock %}
+{% block page_title %}Messages{% endblock %}
+{% block extra_css %}
+<style>
+.chat-wrap { max-width: 640px; display: flex; flex-direction: column; height: calc(100vh - 220px); min-height: 420px; }
+.chat-header { display: flex; align-items: center; gap: 12px; padding: 14px 16px; background: #fff; border: 1px solid var(--border); border-radius: 16px 16px 0 0; }
+.chat-thread { flex: 1; overflow-y: auto; background: var(--surface); border-left: 1px solid var(--border); border-right: 1px solid var(--border); padding: 16px; display: flex; flex-direction: column; gap: 10px; }
+.chat-bubble { max-width: 72%; padding: 10px 14px; border-radius: 16px; font-size: 0.9rem; line-height: 1.4; }
+.chat-bubble.mine { align-self: flex-end; background: var(--violet-600); color: #fff; border-bottom-right-radius: 4px; }
+.chat-bubble.theirs { align-self: flex-start; background: #fff; border: 1px solid var(--border); border-bottom-left-radius: 4px; }
+.chat-bubble time { display: block; font-size: 0.68rem; opacity: 0.7; margin-top: 4px; }
+.chat-input-row { display: flex; gap: 10px; padding: 14px 16px; background: #fff; border: 1px solid var(--border); border-radius: 0 0 16px 16px; }
+.chat-input-row textarea { flex: 1; resize: none; }
+</style>
+{% endblock %}
+{% block content %}
+<p class="muted" style="margin-bottom:10px;"><a href="{% url 'messaging:conversation_list' %}" style="color:var(--violet-600);">&larr; All conversations</a></p>
+
+<div class="chat-wrap">
+    <div class="chat-header">
+        <span class="checkout-avatar">{{ other_party.username|slice:":1"|upper }}</span>
+        <div>
+            <strong style="display:block;">{{ other_party.username }}</strong>
+            <span class="muted" style="font-size:0.8rem;">{{ contract.job.title }}</span>
+        </div>
+    </div>
+
+    <div class="chat-thread">
+        {% for message in thread %}
+            <div class="chat-bubble {% if message.sender == user %}mine{% else %}theirs{% endif %}">
+                {{ message.body }}
+                <time>{{ message.created_at|date:"M d, g:i A" }}</time>
+            </div>
+        {% empty %}
+            <p class="muted">No messages yet — say hello to {{ other_party.username }}.</p>
+        {% endfor %}
+    </div>
+
+    <form method="post" class="chat-input-row">
+        {% csrf_token %}
+        {{ form.body }}
+        <button type="submit" class="btn btn-primary">Send</button>
+    </form>
+</div>
+{% endblock %}

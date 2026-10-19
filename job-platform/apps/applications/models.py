@@ -14,6 +14,12 @@ class Application(models.Model):
     worker = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="applications")
     cover_letter = models.TextField(blank=True)
     proposed_amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    attachment = models.FileField(
+        upload_to="documents/applications/",
+        blank=True,
+        null=True,
+        help_text="Optional: a resume or portfolio specific to this application, kept separate from your profile resume.",
+    )
     status = models.CharField(max_length=10, choices=Status.choices, default=Status.PENDING)
     applied_at = models.DateTimeField(auto_now_add=True)
 
